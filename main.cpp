@@ -1,13 +1,11 @@
-#include <QtGui/QGuiApplication>
-#include "qtquick2applicationviewer.h"
+#include "mainwindow.h"
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
 
-    QtQuick2ApplicationViewer viewer;
-    viewer.setMainQmlFile(QStringLiteral("qml/rosa-cloud/main.qml"));
-    viewer.showExpanded();
-
-    return app.exec();
+    return a.exec();
 }

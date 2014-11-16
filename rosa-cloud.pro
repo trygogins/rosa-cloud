@@ -1,20 +1,23 @@
-# Add more folders to ship with the application, here
-folder_01.source = qml/rosa-cloud
-folder_01.target = qml
-DEPLOYMENTFOLDERS = folder_01
+#-------------------------------------------------
+#
+# Project created by QtCreator 2014-11-16T21:07:44
+#
+#-------------------------------------------------
 
-# Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
+QT       += core gui
 
-# The .cpp file which was generated for your project. Feel free to hack it.
-SOURCES += main.cpp
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# Installation path
-# target.path =
+TARGET = rosa-cloud
+TEMPLATE = app
 
-# Please do not modify the following two lines. Required for deployment.
-include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
-qtcAddDeployment()
+
+SOURCES += main.cpp\
+        mainwindow.cpp
+
+HEADERS  += mainwindow.h
+
+FORMS    += mainwindow.ui
 
 OTHER_FILES += \
     README.md
