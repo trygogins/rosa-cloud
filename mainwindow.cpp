@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    activated = new bool[ui->listWidget->size()];
+    activated = new bool[(int)ui->listWidget->count()];
 }
 
 MainWindow::~MainWindow()
@@ -14,21 +14,31 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
+void MainWindow::on_listWidget_currentRowChanged(int currentRow)
 {
-    ui->label_2->setText(item->text());
-    cur_index = ui->listWidget->row( item );
+    ui->label_2->setText(ui->listWidget->item(currentRow)->text());
+    cur_index = currentRow;
+    changeState(!activated[cur_index]);
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    if (activated[cur_index]) {
-       ui->label_4->setText("<html><head/><body><p><span style=\" color:#0000ff;\">Aктивен</span></p></body></html>");
-       ui->pushButton_2->setEnabled(false);
-       activated[cur_index] = true;
+      changeState(activated[cur_index]);
+}
+
+void MainWindow::changeState(bool state) {
+    if (state) {
+        ui->label_4->setText("<html><head/><body><p><span style=\" color:#ff0000;\">Не активен</span></p></body></html>");
+        ui->pushButton_2->setEnabled(false);
+        activated[cur_index] = false;
     } else {
-       ui->label_4->setText("<html><head/><body><p><span style=\" color:#ff0000;\">Не активен</span></p></body></html>");
-       ui->pushButton_2->setEnabled(false);
-       activated[cur_index] = false;
+       ui->label_4->setText("<html><head/><body><p><span style=\" color:#00ff00;\">Aктивен</span></p></body></html>");
+       ui->pushButton_2->setEnabled(true);
+       activated[cur_index] = true;
     }
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+
 }

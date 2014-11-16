@@ -21,10 +21,16 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
+    void on_listWidget_currentRowChanged(int currentRow);
+
 private:
     Ui::MainWindow *ui;
     bool *activated;
     int cur_index;
+
+    void changeState(bool state);
 };
 
 #endif // MAINWINDOW_H
