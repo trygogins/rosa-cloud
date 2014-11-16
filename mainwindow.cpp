@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    activated = new bool[2];
+    activated = new bool[ui->listWidget->size()];
 }
 
 MainWindow::~MainWindow()
