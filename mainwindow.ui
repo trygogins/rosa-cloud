@@ -10,9 +10,15 @@
     <height>454</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>637</width>
+    <height>454</height>
+   </size>
+  </property>
   <property name="font">
    <font>
-    <family>PT Sans</family>
+    <family>Arial</family>
    </font>
   </property>
   <property name="windowTitle">
@@ -47,10 +53,10 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>30</x>
       <y>10</y>
-      <width>321</width>
-      <height>41</height>
+      <width>591</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -68,10 +74,10 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>380</x>
+      <x>300</x>
       <y>60</y>
-      <width>161</width>
-      <height>41</height>
+      <width>321</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -95,10 +101,10 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>310</x>
       <y>150</y>
-      <width>91</width>
-      <height>41</height>
+      <width>121</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -109,14 +115,17 @@
     <property name="text">
      <string>Статус:</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
       <x>440</x>
       <y>150</y>
-      <width>141</width>
-      <height>41</height>
+      <width>181</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
