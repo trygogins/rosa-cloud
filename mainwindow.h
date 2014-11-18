@@ -31,6 +31,7 @@ private:
     QHash<QString, QString>* serviceHosts;
 
     void changeState(bool state);
+    QString getButtonHtml(QString, QColor*);
 };
 
 #endif // MAINWINDOW_H

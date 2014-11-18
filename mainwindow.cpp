@@ -35,15 +35,21 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::changeState(bool state) {
     if (state) {
-        ui->label_4->setText("<html><head/><body><p><span style=\" color:#ff0000;\">Не активен</span></p></body></html>");
+        ui->label_4->setText(getButtonHtml("Не активен", new QColor("red")));
         ui->pushButton_2->setEnabled(false);
         activated[cur_index] = false;
 
     } else {
-       ui->label_4->setText("<html><head/><body><p><span style=\" color:#00ff00;\">Aктивен</span></p></body></html>");
+       ui->label_4->setText(getButtonHtml("Aктивен", new QColor("green")));
        ui->pushButton_2->setEnabled(true);
        activated[cur_index] = true;
     }
+}
+
+QString MainWindow::getButtonHtml(QString text, QColor *color)
+{
+    return "<html><head/><body><p><span style=\" color:" + color->name() +
+            ";\">" + text + "</span></p></body></html>";
 }
 
 void MainWindow::on_pushButton_2_clicked()
