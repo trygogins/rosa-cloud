@@ -14,14 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    commandrunner.cpp \
-    filedownloader.cpp
+    	commandrunner.cpp \
+    	filedownloader.cpp \
+	authdialog.cpp
 
 HEADERS  += mainwindow.h \
-    commandrunner.h \
-    filedownloader.h
+    	commandrunner.h \
+    	filedownloader.h \
+    	authdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    authdialog.ui
 
 OTHER_FILES += \
     README.md

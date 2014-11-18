@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "authdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -7,6 +8,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     activated = new bool[(int)ui->listWidget->count()];
+
+    // initialize the map
+    serviceHosts = new QHash<QString, QString>();
+    serviceHosts->insert("4Shared", "https://webdav.4shared.com/");
 }
 
 MainWindow::~MainWindow()
@@ -24,6 +29,8 @@ void MainWindow::on_listWidget_currentRowChanged(int currentRow)
 void MainWindow::on_pushButton_clicked()
 {
       changeState(activated[cur_index]);
+      AuthDialog* d = new AuthDialog(this, serviceHosts->value("4Shared"));
+      d->show();
 }
 
 void MainWindow::changeState(bool state) {
@@ -31,6 +38,7 @@ void MainWindow::changeState(bool state) {
         ui->label_4->setText("<html><head/><body><p><span style=\" color:#ff0000;\">Не активен</span></p></body></html>");
         ui->pushButton_2->setEnabled(false);
         activated[cur_index] = false;
+
     } else {
        ui->label_4->setText("<html><head/><body><p><span style=\" color:#00ff00;\">Aктивен</span></p></body></html>");
        ui->pushButton_2->setEnabled(true);

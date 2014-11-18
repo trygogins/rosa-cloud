@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QListWidget>
+#include <QHash>
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +28,7 @@ private:
     Ui::MainWindow *ui;
     bool *activated;
     int cur_index;
+    QHash<QString, QString>* serviceHosts;
 
     void changeState(bool state);
 };
