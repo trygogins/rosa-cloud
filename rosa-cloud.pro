@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,9 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    commandrunner.cpp \
+    filedownloader.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    commandrunner.h \
+    filedownloader.h
 
 FORMS    += mainwindow.ui
 
