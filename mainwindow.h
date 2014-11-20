@@ -9,6 +9,8 @@ namespace Ui {
 class MainWindow;
 }
 
+class ProviderModel;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,21 +19,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-    void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void on_listWidget_currentRowChanged(int currentRow);
-
 private:
-    Ui::MainWindow *ui;
-    bool *activated;
-    int cur_index;
-    QHash<QString, QString>* serviceHosts;
+    void fillProviderModel();
 
-    void changeState(bool state);
-    QString getButtonHtml(QString, QColor*);
+    Ui::MainWindow *ui;
+    ProviderModel *m_providerModel;
 };
 
 #endif // MAINWINDOW_H

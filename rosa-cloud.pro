@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     	commandrunner.cpp \
     	filedownloader.cpp \
-	authdialog.cpp
+    authdialog.cpp \
+    providermodel.cpp
 
 HEADERS  += mainwindow.h \
     	commandrunner.h \
     	filedownloader.h \
-    	authdialog.h
+        authdialog.h \
+    providermodel.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui
