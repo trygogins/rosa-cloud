@@ -9,6 +9,7 @@ namespace Ui {
 class MainWindow;
 }
 
+class AuthDialog;
 class ProviderModel;
 
 class MainWindow : public QMainWindow
@@ -23,6 +24,7 @@ private:
     void fillProviderModel();
 
     Ui::MainWindow *ui;
+    AuthDialog *m_authDialog;
     ProviderModel *m_providerModel;
 };
 

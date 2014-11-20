@@ -12,6 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_providerModel = new ProviderModel(this);
     ui->providerView->setModel(m_providerModel);
     fillProviderModel();
+
+    m_authDialog = new AuthDialog(this);
+
+    connect(ui->providerView, SIGNAL(doubleClicked(QModelIndex)),
+            m_authDialog, SLOT(open(QModelIndex)));
 }
 
 MainWindow::~MainWindow()
