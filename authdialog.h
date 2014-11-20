@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QAbstractButton>
+#include <QUrl>
 
 namespace Ui {
 class AuthDialog;
@@ -13,8 +14,11 @@ class AuthDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AuthDialog(QWidget *parent = 0, QString host = 0);
+    explicit AuthDialog(QWidget *parent = 0);
     ~AuthDialog();
+
+public slots:
+    void open(const QModelIndex &index);
 
 private slots:
     void on_buttonBox_accepted();
@@ -23,7 +27,7 @@ private slots:
 
 private:
     Ui::AuthDialog *ui;
-    QString host;
+    QUrl m_url;
 };
 
 #endif // AUTHDIALOG_H
