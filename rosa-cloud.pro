@@ -13,23 +13,23 @@ TEMPLATE = app
 
 
 SOURCES += \
-    main.cpp \
-    mainwindow.cpp \
-    commandrunner.cpp \
-    filedownloader.cpp \
-    authdialog.cpp \
-    providermodel.cpp
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/commandrunner.cpp \
+    src/filedownloader.cpp \
+    src/authdialog.cpp \
+    src/providermodel.cpp
 
 HEADERS += \
-    mainwindow.h \
-    commandrunner.h \
-    filedownloader.h \
-    authdialog.h \
-    providermodel.h
+    src/mainwindow.h \
+    src/commandrunner.h \
+    src/filedownloader.h \
+    src/authdialog.h \
+    src/providermodel.h
 
 FORMS += \
-    mainwindow.ui \
-    authdialog.ui
+    src/mainwindow.ui \
+    src/authdialog.ui
 
 OTHER_FILES += \
     README.md
