@@ -12,20 +12,23 @@ TARGET = rosa-cloud
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    	commandrunner.cpp \
-    	filedownloader.cpp \
+SOURCES += \
+    main.cpp \
+    mainwindow.cpp \
+    commandrunner.cpp \
+    filedownloader.cpp \
     authdialog.cpp \
     providermodel.cpp
 
-HEADERS  += mainwindow.h \
-    	commandrunner.h \
-    	filedownloader.h \
-        authdialog.h \
+HEADERS += \
+    mainwindow.h \
+    commandrunner.h \
+    filedownloader.h \
+    authdialog.h \
     providermodel.h
 
-FORMS    += mainwindow.ui \
+FORMS += \
+    mainwindow.ui \
     authdialog.ui
 
 OTHER_FILES += \
