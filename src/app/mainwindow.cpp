@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->providerView->setModel(m_providerModel);
     if (readConfig())
         fillProviderModel();
+    m_providerModel->load();
 
     m_authDialog = new AuthDialog(this);
 

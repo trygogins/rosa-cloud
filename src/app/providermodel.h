@@ -65,9 +65,15 @@ public:
 
     explicit ProviderModel(QObject *parent = 0);
     ~ProviderModel();
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
     QVariant data(const QModelIndex &index, int role) const;
     int rowCount(const QModelIndex &) const;
     void addProvider(const QString &name, const QString &title, const QUrl &url);
+    void save();
+    void load();
+
+protected:
+    QModelIndex firstMatch(int role, const QVariant &value);
 
 private:
     QList<Provider> m_providers;
