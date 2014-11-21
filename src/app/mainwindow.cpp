@@ -9,6 +9,9 @@
 #include <QJsonArray>
 #include <QDebug>
 
+#include <QMessageBox>
+#include <QMenuBar>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -28,11 +31,18 @@ MainWindow::MainWindow(QWidget *parent) :
     m_addProviderDialog = new AddProviderDialog(m_providerModel, this);
 
     connect(ui->addButton, SIGNAL(clicked()), m_addProviderDialog, SLOT(show()));
+
+    createMenu();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::showAbout()
+{
+    QMessageBox::about(this, tr("About"), qApp->applicationDisplayName());
 }
 
 void MainWindow::fillProviderModel()
@@ -59,5 +69,12 @@ bool MainWindow::readConfig()
     QJsonDocument doc = QJsonDocument::fromJson(data);
     m_config = doc.object();
     return !m_config.isEmpty();
+}
+
+void MainWindow::createMenu()
+{
+    QMenu *aboutMenu = menuBar()->addMenu("About");
+    aboutMenu->addAction("About", this, SLOT(showAbout()));
+    aboutMenu->addAction("About Qt", qApp, SLOT(aboutQt()));
 }
 
