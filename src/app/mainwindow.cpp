@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "authdialog.h"
 #include "providermodel.h"
+#include "activeprovidermodel.h"
+#include "addproviderdialog.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -15,15 +16,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     m_providerModel = new ProviderModel(this);
-    ui->providerView->setModel(m_providerModel);
-    if (readConfig())
+    m_activeProviderModel = new ActiveProviderModel(this);
+
+    if (readConfig()) {
         fillProviderModel();
-    m_providerModel->load();
+        m_providerModel->load();
+        m_activeProviderModel->setSourceModel(m_providerModel);
+    }
 
-    m_authDialog = new AuthDialog(this);
+    ui->providerView->setModel(m_activeProviderModel);
+    m_addProviderDialog = new AddProviderDialog(m_providerModel, this);
 
-    connect(ui->providerView, SIGNAL(doubleClicked(QModelIndex)),
-            m_authDialog, SLOT(open(QModelIndex)));
+    connect(ui->addButton, SIGNAL(clicked()), m_addProviderDialog, SLOT(show()));
 }
 
 MainWindow::~MainWindow()
