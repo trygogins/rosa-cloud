@@ -22,9 +22,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void showAbout();
+
 private:
     void fillProviderModel();
     bool readConfig();
+    void createMenu();
 
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
