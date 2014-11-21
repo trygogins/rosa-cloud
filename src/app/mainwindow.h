@@ -10,8 +10,9 @@ namespace Ui {
 class MainWindow;
 }
 
-class AuthDialog;
+class AddProviderDialog;
 class ProviderModel;
+class ActiveProviderModel;
 
 class MainWindow : public QMainWindow
 {
@@ -26,8 +27,10 @@ private:
     bool readConfig();
 
     Ui::MainWindow *ui;
-    AuthDialog *m_authDialog;
+    AddProviderDialog *m_addProviderDialog;
+
     ProviderModel *m_providerModel;
+    ActiveProviderModel *m_activeProviderModel;
     QJsonObject m_config;
 };
 
