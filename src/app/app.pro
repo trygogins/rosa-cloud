@@ -31,3 +31,9 @@ FORMS += \
     mainwindow.ui \
     authdialog.ui
 
+DISTFILES += \
+    config.js
+
+RESOURCES += \
+    resources.qrc
+

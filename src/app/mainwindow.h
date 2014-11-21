@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QListWidget>
 #include <QHash>
+#include <QJsonObject>
 
 namespace Ui {
 class MainWindow;
@@ -22,10 +23,12 @@ public:
 
 private:
     void fillProviderModel();
+    bool readConfig();
 
     Ui::MainWindow *ui;
     AuthDialog *m_authDialog;
     ProviderModel *m_providerModel;
+    QJsonObject m_config;
 };
 
 #endif // MAINWINDOW_H
