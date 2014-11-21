@@ -18,8 +18,8 @@ AuthDialog::~AuthDialog()
 
 void AuthDialog::open(const QModelIndex &index)
 {
-    QString name = index.data(ProviderModel::Name).toString();
-    m_url = index.data(ProviderModel::Host).toUrl();
+    QString name = index.data(ProviderModel::Title).toString();
+    m_url = index.data(ProviderModel::Url).toUrl();
 
     setWindowTitle(tr("Login to %1").arg(name));
 

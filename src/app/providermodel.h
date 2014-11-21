@@ -7,16 +7,21 @@
 class Provider
 {
 public:
-    Provider(const QString &name, const QUrl &url) :
+    Provider(const QString &name, const QString &title, const QUrl &url) :
         m_name(name),
-        m_url(url),
-        m_active(false)
+        m_title(title),
+        m_url(url)
     {
     }
 
     QString name() const
     {
         return m_name;
+    }
+
+    QString title() const
+    {
+        return m_title;
     }
 
     QUrl url() const
@@ -26,18 +31,24 @@ public:
 
     bool isActive() const
     {
-        return m_active;
+        return !m_token.isEmpty();
     }
 
-    void setActive(bool active)
+    void setToken(const QString &token)
     {
-        m_active = active;
+        m_token = token;
+    }
+
+    QString token() const
+    {
+        return m_token;
     }
 
 private:
     QString m_name;
+    QString m_title;
     QUrl m_url;
-    bool m_active;
+    QString m_token;
 };
 
 class ProviderModel : public QAbstractListModel
@@ -45,16 +56,18 @@ class ProviderModel : public QAbstractListModel
     Q_OBJECT
 public:
     enum Roles {
-        Name = Qt::DisplayRole,
-        Host = Qt::UserRole,
-        Active
+        Title = Qt::DisplayRole,
+        Name = Qt::UserRole,
+        Url,
+        Active,
+        Token
     };
 
     explicit ProviderModel(QObject *parent = 0);
     ~ProviderModel();
     QVariant data(const QModelIndex &index, int role) const;
     int rowCount(const QModelIndex &) const;
-    void addProvider(const QString &name, const QUrl &url);
+    void addProvider(const QString &name, const QString &title, const QUrl &url);
 
 private:
     QList<Provider> m_providers;

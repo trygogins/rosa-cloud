@@ -24,10 +24,14 @@ QVariant ProviderModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Name:
         return service.name();
-    case Host:
+    case Title:
+        return service.title();
+    case Url:
         return service.url();
     case Active:
         return service.isActive();
+    case Token:
+        return service.token();
     }
 
     return QVariant();
@@ -38,11 +42,11 @@ int ProviderModel::rowCount(const QModelIndex &) const
     return m_providers.size();
 }
 
-void ProviderModel::addProvider(const QString &name, const QUrl &url)
+void ProviderModel::addProvider(const QString &name, const QString &title, const QUrl &url)
 {
     int rows = m_providers.size();
     beginInsertRows(QModelIndex(), rows, rows);
-    Provider provider(name, url);
+    Provider provider(name, title, url);
     m_providers.append(provider);
     endInsertRows();
 }
