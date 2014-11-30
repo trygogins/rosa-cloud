@@ -76,6 +76,13 @@ void MainWindow::openFolder(QString path) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
+void MainWindow::setRed(QWidget *widget)
+{
+    QPalette pal2 = widget->palette();
+    pal2.setColor(QPalette::Base, 0xFF0000);
+    widget->setPalette(pal2);
+}
+
 void MainWindow::addItem(int index)
 {
     QListWidgetItem *item = new QListWidgetItem();
@@ -113,5 +120,11 @@ void MainWindow::addItem(int index)
     widget->setLayout(hLayout);
     item->setSizeHint(widget->sizeHint());
     ui->providerView->setItemWidget(item, widget);
+
+    QSignalMapper *signalMapper3 = new QSignalMapper();
+    connect(m_providers[index], SIGNAL(activated()), signalMapper3, SLOT(map()));
+    signalMapper3->setMapping(m_providers[index], widget);
+    connect(signalMapper3, SIGNAL(mapped(QWidget*)), this, SLOT(setRed(QWidget*)));
+
 }
 

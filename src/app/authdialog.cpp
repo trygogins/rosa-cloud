@@ -18,11 +18,12 @@ AuthDialog::~AuthDialog()
 void AuthDialog::open(QObject *o_provider)
 {
     Provider *provider = dynamic_cast<Provider*>(o_provider);
+    this->provider = provider;
     m_url = provider->url();
     setWindowTitle(tr("Login to %1").arg(provider->name()));
 
     if (!isVisible())
-        show();
+        show();    
 
     //there will be the save and connect methods
 }
@@ -30,6 +31,7 @@ void AuthDialog::open(QObject *o_provider)
 void AuthDialog::on_buttonBox_accepted()
 {
     // mount
+    provider->setToken(QString("token!!"));
     QProcess* proc = new QProcess();
     proc->start("sudo mount " + m_url.toString());
 }

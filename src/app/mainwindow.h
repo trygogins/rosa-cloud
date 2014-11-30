@@ -26,6 +26,7 @@ public:
 private slots:
     void showAbout();
     void openFolder(QString path);
+    void setRed(QWidget*);
 
 private:
     void fillProviderModel();

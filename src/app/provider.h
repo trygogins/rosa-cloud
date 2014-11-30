@@ -36,15 +36,19 @@ public:
         return !m_token.isEmpty();
     }
 
-    void setToken(const QString &token)
-    {
-        m_token = token;
-    }
-
     QString token() const
     {
         return m_token;
     }
+
+    void setToken(const QString &token)
+    {
+        m_token = token;
+        activated();
+    }
+
+signals:
+    void activated();
 
 private:
     QString m_name;
