@@ -18,13 +18,13 @@ AuthDialog::~AuthDialog()
 void AuthDialog::open(QObject *o_provider)
 {
     Provider *provider = dynamic_cast<Provider*>(o_provider);
-//    QString name = index.data(ProviderModel::Title).toString();
-//    m_url = index.data(ProviderModel::Url).toUrl();
-
-//    setWindowTitle(tr("Login to %1").arg(name));
+    m_url = provider->url();
+    setWindowTitle(tr("Login to %1").arg(provider->name()));
 
     if (!isVisible())
         show();
+
+    //there will be the save and connect methods
 }
 
 void AuthDialog::on_buttonBox_accepted()

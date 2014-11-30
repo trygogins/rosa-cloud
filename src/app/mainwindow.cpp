@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QPushButton>
+#include <QDesktopServices>
 
 #include <QSignalMapper>
 
@@ -71,21 +72,29 @@ void MainWindow::createMenu()
     aboutMenu->addAction("About Qt", qApp, SLOT(aboutQt()));
 }
 
+void MainWindow::openFolder(QString path) {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
 void MainWindow::addItem(int index)
 {
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);
-
     QPushButton *settingsbutton = new QPushButton("Настройки");
-    AuthDialog *authDialog = new AuthDialog(this);
-    //QUrl *url = new QUrl(m_providers[index].url());
 
+    AuthDialog *authDialog = new AuthDialog(this);
     QSignalMapper *signalMapper = new QSignalMapper();
     connect(settingsbutton, SIGNAL(clicked()), signalMapper, SLOT(map()));
     signalMapper->setMapping(settingsbutton, m_providers[index]);
     connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(open(QObject*)));
 
     QPushButton *openbutton = new QPushButton("Открыть папку");
+    QString path = "/";
+    QSignalMapper *signalMapper2 = new QSignalMapper();
+    connect(openbutton, SIGNAL(clicked()), signalMapper2, SLOT(map()));
+    signalMapper2->setMapping(openbutton, path);
+    connect(signalMapper2, SIGNAL(mapped(QString)), this, SLOT(openFolder(QString)));
+
     QLabel *label = new QLabel(m_providers[index]->title());
     label->setStyleSheet("font: 18pt;");
     QVBoxLayout *vLayout= new QVBoxLayout();
@@ -103,7 +112,6 @@ void MainWindow::addItem(int index)
     widget->setPalette(pal);
     widget->setLayout(hLayout);
     item->setSizeHint(widget->sizeHint());
-
     ui->providerView->setItemWidget(item, widget);
 }
 
