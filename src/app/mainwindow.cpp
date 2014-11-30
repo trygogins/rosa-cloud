@@ -1,13 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "providermodel.h"
-#include "activeprovidermodel.h"
-#include "addproviderdialog.h"
+#include "authdialog.h"
 
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QDebug>
+#include <QWidget>
+#include <QListWidget>
+#include <QPushButton>
+
+#include <QSignalMapper>
 
 #include <QMessageBox>
 #include <QMenuBar>
@@ -17,22 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    m_providerModel = new ProviderModel(this);
-    m_activeProviderModel = new ActiveProviderModel(this);
-
     if (readConfig()) {
         fillProviderModel();
-        m_providerModel->load();
-        m_activeProviderModel->setSourceModel(m_providerModel);
     }
-
-    ui->providerView->setModel(m_activeProviderModel);
-    m_addProviderDialog = new AddProviderDialog(m_providerModel, this);
-
-    connect(ui->addButton, SIGNAL(clicked()), m_addProviderDialog, SLOT(show()));
-
-    createMenu();
 }
 
 MainWindow::~MainWindow()
@@ -53,7 +43,9 @@ void MainWindow::fillProviderModel()
         QString name = provider.value("name").toString();
         QString title = provider.value("title").toString();
         QString url = provider.value("url").toString();
-        m_providerModel->addProvider(name, title, url);
+        Provider *prd = new Provider(name, title, url);
+        m_providers.push_back(prd);
+        addItem(m_providers.size() - 1);
     }
 }
 
@@ -68,6 +60,7 @@ bool MainWindow::readConfig()
     QByteArray data = file.readAll();
     QJsonDocument doc = QJsonDocument::fromJson(data);
     m_config = doc.object();
+
     return !m_config.isEmpty();
 }
 
@@ -76,5 +69,37 @@ void MainWindow::createMenu()
     QMenu *aboutMenu = menuBar()->addMenu("About");
     aboutMenu->addAction("About", this, SLOT(showAbout()));
     aboutMenu->addAction("About Qt", qApp, SLOT(aboutQt()));
+}
+
+void MainWindow::addItem(int index)
+{
+    QListWidgetItem *item = new QListWidgetItem();
+    ui->providerView->addItem(item);
+    QPushButton *settingsbutton = new QPushButton("Настройки");
+    AuthDialog *authDialog = new AuthDialog(this);
+    //QUrl *url = new QUrl(m_providers[index].url());
+
+    QSignalMapper *signalMapper = new QSignalMapper();
+    connect(settingsbutton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(settingsbutton, m_providers[index]);
+    connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(open(QObject*)));
+
+    QPushButton *openbutton = new QPushButton("Открыть папку");
+    QLabel *label = new QLabel(m_providers[index]->title());
+    label->setStyleSheet("font: 18pt;");
+    QVBoxLayout *vLayout= new QVBoxLayout();
+    vLayout->addWidget(settingsbutton);
+    vLayout->addWidget(openbutton);
+    QHBoxLayout *hLayout= new QHBoxLayout();
+    hLayout->addWidget(label);
+    hLayout->addLayout(vLayout);
+    QWidget *widget = new QWidget();
+    widget->setAutoFillBackground(true);
+    QPalette Pal = widget->palette();
+    Pal.setColor(QPalette::Base, 0x95FF6B);
+    widget->setPalette(Pal);
+    widget->setLayout(hLayout);
+    item->setSizeHint(widget->sizeHint());
+    ui->providerView->setItemWidget(item, widget);
 }
 

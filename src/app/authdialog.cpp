@@ -1,6 +1,5 @@
 #include "authdialog.h"
 #include "ui_authdialog.h"
-#include "providermodel.h"
 #include <QMessageBox>
 #include <QProcess>
 
@@ -16,12 +15,13 @@ AuthDialog::~AuthDialog()
     delete ui;
 }
 
-void AuthDialog::open(const QModelIndex &index)
+void AuthDialog::open(QObject *o_provider)
 {
-    QString name = index.data(ProviderModel::Title).toString();
-    m_url = index.data(ProviderModel::Url).toUrl();
+    Provider *provider = dynamic_cast<Provider*>(o_provider);
+//    QString name = index.data(ProviderModel::Title).toString();
+//    m_url = index.data(ProviderModel::Url).toUrl();
 
-    setWindowTitle(tr("Login to %1").arg(name));
+//    setWindowTitle(tr("Login to %1").arg(name));
 
     if (!isVisible())
         show();

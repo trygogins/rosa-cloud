@@ -17,24 +17,19 @@ SOURCES += \
     mainwindow.cpp \
     commandrunner.cpp \
     filedownloader.cpp \
-    authdialog.cpp \
-    providermodel.cpp \
-    activeprovidermodel.cpp \
-    addproviderdialog.cpp
+    authdialog.cpp
 
 HEADERS += \
     mainwindow.h \
     commandrunner.h \
     filedownloader.h \
     authdialog.h \
-    providermodel.h \
-    activeprovidermodel.h \
-    addproviderdialog.h
+    ../providerdelegate.h \
+    provider.h
 
 FORMS += \
     mainwindow.ui \
-    authdialog.ui \
-    addproviderdialog.ui
+    authdialog.ui
 
 DISTFILES += \
     config.js

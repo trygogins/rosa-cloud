@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QHash>
 #include <QJsonObject>
+#include "provider.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,13 +30,15 @@ private:
     void fillProviderModel();
     bool readConfig();
     void createMenu();
+    void addItem(int index);
 
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
-
-    ProviderModel *m_providerModel;
-    ActiveProviderModel *m_activeProviderModel;
+    //ProviderModel *m_providerModel;
+//    ActiveProviderModel *m_activeProviderModel;
     QJsonObject m_config;
+
+    QList<Provider*> m_providers;
 };
 
 #endif // MAINWINDOW_H

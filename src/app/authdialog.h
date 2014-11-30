@@ -5,6 +5,8 @@
 #include <QAbstractButton>
 #include <QUrl>
 
+#include "provider.h"
+
 namespace Ui {
 class AuthDialog;
 }
@@ -18,7 +20,7 @@ public:
     ~AuthDialog();
 
 public slots:
-    void open(const QModelIndex &index);
+    void open(QObject *o_provider);
 
 private slots:
     void on_buttonBox_accepted();
