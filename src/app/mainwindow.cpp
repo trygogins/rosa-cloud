@@ -75,6 +75,7 @@ void MainWindow::addItem(int index)
 {
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);
+
     QPushButton *settingsbutton = new QPushButton("Настройки");
     AuthDialog *authDialog = new AuthDialog(this);
     //QUrl *url = new QUrl(m_providers[index].url());
@@ -95,11 +96,14 @@ void MainWindow::addItem(int index)
     hLayout->addLayout(vLayout);
     QWidget *widget = new QWidget();
     widget->setAutoFillBackground(true);
-    QPalette Pal = widget->palette();
-    Pal.setColor(QPalette::Base, 0x95FF6B);
-    widget->setPalette(Pal);
+
+    QPalette pal = widget->palette();
+    const int GREEN = 0x95FF6B;
+    pal.setColor(QPalette::Base, GREEN);
+    widget->setPalette(pal);
     widget->setLayout(hLayout);
     item->setSizeHint(widget->sizeHint());
+
     ui->providerView->setItemWidget(item, widget);
 }
 
