@@ -15,7 +15,7 @@ AuthDialog::~AuthDialog()
     delete ui;
 }
 
-void AuthDialog::open(QObject *o_provider)
+void AuthDialog::openAuthDialog(QObject *o_provider)
 {
     Provider *provider = dynamic_cast<Provider*>(o_provider);
     this->provider = provider;

@@ -20,7 +20,7 @@ public:
     ~AuthDialog();
 
 public slots:
-    void open(QObject *o_provider);
+    void openAuthDialog(QObject *o_provider);
 
 private slots:
     void on_buttonBox_accepted();

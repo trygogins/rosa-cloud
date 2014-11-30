@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QJsonObject>
 #include <QHBoxLayout>
+#include <QPushButton>
 #include "provider.h"
 
 namespace Ui {
@@ -37,6 +38,8 @@ private:
     void addItem(int index);
 
     QWidget *createWidget(Provider*, QHBoxLayout*);
+    QPushButton* createSettingsButton(Provider *);
+    QPushButton* createOpenButton(QString &);
 
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;

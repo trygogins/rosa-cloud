@@ -83,29 +83,45 @@ QWidget* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
     return widget;
 }
 
+QPushButton* MainWindow::createSettingsButton(Provider *provider)
+{
+    QPushButton *settingsButton = new QPushButton("Настройки");
+    AuthDialog *authDialog = new AuthDialog(this);
+    QSignalMapper *signalMapper = new QSignalMapper();
+    connect(settingsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(settingsButton, provider);
+    connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(openAuthDialog(QObject*)));
+
+    return settingsButton;
+}
+
+QPushButton* MainWindow::createOpenButton(QString &path)
+{
+    QPushButton *openButton = new QPushButton("Открыть папку");
+
+    QSignalMapper *signalMapper = new QSignalMapper();
+    connect(openButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(openButton, path);
+    connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(openFolder(QString)));
+
+    return openButton;
+}
+
 void MainWindow::addItem(int index)
 {
     Provider *provider = m_providers[index];
 
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);
-    QPushButton *settingsbutton = new QPushButton("Настройки");
 
-    AuthDialog *authDialog = new AuthDialog(this);
-    QSignalMapper *signalMapper = new QSignalMapper();
-    connect(settingsbutton, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(settingsbutton, provider);
-    connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(open(QObject*)));
+    QPushButton *settingsbutton = createSettingsButton(provider);
 
-    QPushButton *openbutton = new QPushButton("Открыть папку");
     QString path = "/";
-    QSignalMapper *signalMapper2 = new QSignalMapper();
-    connect(openbutton, SIGNAL(clicked()), signalMapper2, SLOT(map()));
-    signalMapper2->setMapping(openbutton, path);
-    connect(signalMapper2, SIGNAL(mapped(QString)), this, SLOT(openFolder(QString)));
+    QPushButton *openbutton = createOpenButton(path);
 
     QLabel *label = new QLabel(provider->title());
     label->setStyleSheet("font: 18pt;");
+
     QVBoxLayout *vLayout= new QVBoxLayout();
     vLayout->addWidget(settingsbutton);
     vLayout->addWidget(openbutton);
