@@ -81,17 +81,6 @@ void MainWindow::createMenu()
     aboutMenu->addAction("About Qt", qApp, SLOT(aboutQt()));
 }
 
-void MainWindow::installClient(QString clientName)
-{
-    // TODO: replace with config file
-    switch (clientName) {
-        case "dropbox":
-            break;
-        case "spideroak":
-            break;
-    }
-}
-
 void MainWindow::installDropbox()
 {
     CommandRunner runner;

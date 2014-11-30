@@ -26,7 +26,6 @@ private slots:
     void showAbout();
     void installDropbox();
     void installSpiderOak();
-    void installClient(QString clientName);
 
 private:
     void fillProviderModel();
