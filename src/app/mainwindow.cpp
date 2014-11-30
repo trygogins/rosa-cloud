@@ -10,6 +10,8 @@
 #include <QJsonArray>
 #include <QDebug>
 
+ #include <QSignalMapper>
+
 #include <QMessageBox>
 #include <QMenuBar>
 #include "QProcess"
@@ -33,8 +35,16 @@ MainWindow::MainWindow(QWidget *parent) :
     m_addProviderDialog = new AddProviderDialog(m_providerModel, this);
 
     connect(ui->addButton, SIGNAL(clicked()), m_addProviderDialog, SLOT(show()));
-    connect(ui->pushButton1, SIGNAL(clicked()), this, SLOT(installDropbox()));
-    connect(ui->pushButton2, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
+
+    QSignalMapper* signalMapper = new QSignalMapper (this);
+    connect(ui->pushButton1, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    connect(ui->pushButton2, SIGNAL(clicked()), signalMapper, SLOT(map()));
+
+    signalMapper->setMapping(ui->pushButton1, "dropbox");
+    signalMapper->setMapping(ui->pushButton2, "srideroak");
+
+    connect (signalMapper, SIGNAL(mapped(QString)), this, SLOT(installClient(QString))) ;
+
     createMenu();
 }
 
@@ -83,11 +93,23 @@ void MainWindow::createMenu()
 
 void MainWindow::installClient(QString clientName)
 {
-    // TODO: replace with config file
+    CommandRunner runner;
+    QStringList arguments;
+
+    // TODO: replace with config
     switch (clientName) {
         case "dropbox":
+            arguments << "kfilebox";
+            runner.runCommand("urpmi", arguments);
+            runner.runCommand("kfilebox", QStringList());
             break;
         case "spideroak":
+            arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
+            runner.runCommand("wget", arguments);
+            arguments.clear();
+            arguments << "spideroak.rpm";
+            runner.runCommand("urpmi", arguments);
+            runner.runCommand("SpiderOak", QStringList());
             break;
     }
 }
