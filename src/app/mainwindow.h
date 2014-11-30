@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QHash>
 #include <QJsonObject>
+#include <QHBoxLayout>
 #include "provider.h"
 
 namespace Ui {
@@ -24,20 +25,21 @@ public:
     ~MainWindow();
 
 private slots:
-    void showAbout();
     void openFolder(QString path);
-    void setRed(QWidget*);
+    void activateWidget(QWidget*);
 
 private:
+    static const int ACTIVATED_COLOR = 0x95FF6B;
+    static const int DEACTIVATED_COLOR = 0xFF0000;
+
     void fillProviderModel();
     bool readConfig();
-    void createMenu();
     void addItem(int index);
+
+    QWidget *createWidget(Provider*, QHBoxLayout*);
 
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
-    //ProviderModel *m_providerModel;
-//    ActiveProviderModel *m_activeProviderModel;
     QJsonObject m_config;
 
     QList<Provider*> m_providers;

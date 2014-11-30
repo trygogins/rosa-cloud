@@ -26,16 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::showAbout()
-{
-    QMessageBox::about(this, tr("About"), qApp->applicationDisplayName());
-}
-
 void MainWindow::fillProviderModel()
 {
     QJsonArray providers = m_config["providers"].toArray();
@@ -65,26 +55,38 @@ bool MainWindow::readConfig()
     return !m_config.isEmpty();
 }
 
-void MainWindow::createMenu()
-{
-    QMenu *aboutMenu = menuBar()->addMenu("About");
-    aboutMenu->addAction("About", this, SLOT(showAbout()));
-    aboutMenu->addAction("About Qt", qApp, SLOT(aboutQt()));
-}
-
 void MainWindow::openFolder(QString path) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-void MainWindow::setRed(QWidget *widget)
+void MainWindow::activateWidget(QWidget *widget)
 {
-    QPalette pal2 = widget->palette();
-    pal2.setColor(QPalette::Base, 0xFF0000);
-    widget->setPalette(pal2);
+    QPalette pal = widget->palette();
+    pal.setColor(QPalette::Base, ACTIVATED_COLOR);
+    widget->setPalette(pal);
+}
+
+QWidget* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
+{
+    QWidget *widget = new QWidget();
+    widget->setAutoFillBackground(true);
+    QPalette pal = widget->palette();
+    pal.setColor(QPalette::Base, DEACTIVATED_COLOR);
+    widget->setPalette(pal);
+    widget->setLayout(hLayout);
+
+    QSignalMapper *signalMapper = new QSignalMapper();
+    connect(provider, SIGNAL(activated()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(provider, widget);
+    connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(activateWidget(QWidget*)));
+
+    return widget;
 }
 
 void MainWindow::addItem(int index)
 {
+    Provider *provider = m_providers[index];
+
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);
     QPushButton *settingsbutton = new QPushButton("Настройки");
@@ -92,7 +94,7 @@ void MainWindow::addItem(int index)
     AuthDialog *authDialog = new AuthDialog(this);
     QSignalMapper *signalMapper = new QSignalMapper();
     connect(settingsbutton, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(settingsbutton, m_providers[index]);
+    signalMapper->setMapping(settingsbutton, provider);
     connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(open(QObject*)));
 
     QPushButton *openbutton = new QPushButton("Открыть папку");
@@ -102,7 +104,7 @@ void MainWindow::addItem(int index)
     signalMapper2->setMapping(openbutton, path);
     connect(signalMapper2, SIGNAL(mapped(QString)), this, SLOT(openFolder(QString)));
 
-    QLabel *label = new QLabel(m_providers[index]->title());
+    QLabel *label = new QLabel(provider->title());
     label->setStyleSheet("font: 18pt;");
     QVBoxLayout *vLayout= new QVBoxLayout();
     vLayout->addWidget(settingsbutton);
@@ -110,21 +112,15 @@ void MainWindow::addItem(int index)
     QHBoxLayout *hLayout= new QHBoxLayout();
     hLayout->addWidget(label);
     hLayout->addLayout(vLayout);
-    QWidget *widget = new QWidget();
-    widget->setAutoFillBackground(true);
 
-    QPalette pal = widget->palette();
-    const int GREEN = 0x95FF6B;
-    pal.setColor(QPalette::Base, GREEN);
-    widget->setPalette(pal);
-    widget->setLayout(hLayout);
+    QWidget *widget = createWidget(provider, hLayout);
+
     item->setSizeHint(widget->sizeHint());
     ui->providerView->setItemWidget(item, widget);
+}
 
-    QSignalMapper *signalMapper3 = new QSignalMapper();
-    connect(m_providers[index], SIGNAL(activated()), signalMapper3, SLOT(map()));
-    signalMapper3->setMapping(m_providers[index], widget);
-    connect(signalMapper3, SIGNAL(mapped(QWidget*)), this, SLOT(setRed(QWidget*)));
-
+MainWindow::~MainWindow()
+{
+    delete ui;
 }
 
