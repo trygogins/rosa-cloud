@@ -3,6 +3,7 @@
 #include "providermodel.h"
 #include "activeprovidermodel.h"
 #include "addproviderdialog.h"
+#include "commandrunner.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -11,6 +12,7 @@
 
 #include <QMessageBox>
 #include <QMenuBar>
+#include "QProcess"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,7 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_addProviderDialog = new AddProviderDialog(m_providerModel, this);
 
     connect(ui->addButton, SIGNAL(clicked()), m_addProviderDialog, SLOT(show()));
-
+    connect(ui->pushButton1, SIGNAL(clicked()), this, SLOT(installDropbox()));
+    connect(ui->pushButton2, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
     createMenu();
 }
 
@@ -78,3 +81,17 @@ void MainWindow::createMenu()
     aboutMenu->addAction("About Qt", qApp, SLOT(aboutQt()));
 }
 
+void MainWindow::installDropbox()
+{
+    CommandRunner runner;
+    QStringList arguments;
+    runner.runCommand("urpmi kfilebox && kfilebox", arguments);
+}
+
+void MainWindow::installSpiderOak()
+{
+    CommandRunner runner;
+    QStringList arguments;
+    arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
+    runner.runCommand("wget", arguments); //  && urpmi spideroak.rpm && SpiderOak", arguments);
+}

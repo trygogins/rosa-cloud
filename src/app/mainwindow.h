@@ -24,6 +24,8 @@ public:
 
 private slots:
     void showAbout();
+    void installDropbox();
+    void installSpiderOak();
 
 private:
     void fillProviderModel();
