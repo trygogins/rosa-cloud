@@ -3,7 +3,7 @@
         {
             "name" : "4shared",
             "title" : "4Shared",
-            "url" : ""
+            "url" : "https://webdav.4shared.com/"
         },
         {
             "name" : "dropbox",
@@ -11,9 +11,14 @@
             "url" : ""
         },
         {
-            "name" : "4shared",
-            "title" : "4Shared",
-            "url" : ""
+            "name" : "egnyte",
+            "title" : "Egnyte",
+            "url" : "https://webdav-cottonwoodcap.egnyte.com/cottonwoodcap-egnyte"
+        },
+        {
+            "name" : "yandex_disk",
+            "title" : "Yandex_Disk",
+            "url" : "https://webdav.yandex.ru"
         }
     ]
 }

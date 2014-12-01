@@ -28,6 +28,7 @@ private slots:
 private:
     Ui::AuthDialog *ui;
     QUrl m_url;
+    QString name;
 };
 
 #endif // AUTHDIALOG_H
