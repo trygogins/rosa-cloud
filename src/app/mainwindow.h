@@ -39,7 +39,7 @@ private:
 
     QWidget *createWidget(Provider*, QHBoxLayout*);
     QPushButton* createSettingsButton(Provider *);
-    QPushButton* createOpenButton(QString &);
+    QPushButton* createOpenButton(const QString &);
 
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
