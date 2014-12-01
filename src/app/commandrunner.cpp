@@ -1,17 +1,28 @@
 #include "commandrunner.h"
-#include "QProcess"
+#include <QDebug>
 
-CommandRunner::CommandRunner()
+CommandRunner::CommandRunner() //: QObject(parent)
 {   
 }
 
 
-bool CommandRunner::runCommand(QString command, QStringList arguments) {
-    QProcess process;
-    process.start(command, arguments);
+void CommandRunner::runCommand(QString command, QStringList arguments) {
+    QProcess* process = new QProcess();
+    process->execute(command, arguments);
+    //QObject::connect(&process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput(process)));
+    //connect(&process, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardError(process)));
 
-    if (!process.waitForFinished()) {
-        return false;
-    }
-    return process.exitCode() == 0;
+//    while (!process.waitForFinished());
+
+  //  return process.exitCode() == 0;
 }
+
+//void CommandRunner::readyReadStandardOutput(QProcess process)
+//{
+//    qDebug() << process.readAllStandardOutput();
+//}
+
+//void CommandRunner::readyReadStandardError(QProcess process)
+//{
+//    qDebug() << process.readAllStandardError();
+//}

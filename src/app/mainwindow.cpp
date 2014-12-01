@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "authdialog.h"
+#include "commandrunner.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -15,6 +16,7 @@
 
 #include <QMessageBox>
 #include <QMenuBar>
+#include "QProcess"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     if (readConfig()) {
         fillProviderModel();
     }
+
+    connect(ui->pushButton1, SIGNAL(clicked()), this, SLOT(installDropbox()));
+    connect(ui->pushButton2, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
 }
 
 void MainWindow::fillProviderModel()
@@ -141,3 +146,23 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::installDropbox()
+{
+    CommandRunner runner;
+    QStringList arguments;
+    arguments << "kfilebox";
+    runner.runCommand("urpmi", arguments);
+    runner.runCommand("kfilebox", QStringList());
+}
+
+void MainWindow::installSpiderOak()
+{
+    CommandRunner runner;
+    QStringList arguments;
+    arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
+    runner.runCommand("wget", arguments);
+    arguments.clear();
+    arguments << "spideroak.rpm";
+    runner.runCommand("urpmi", arguments);
+    runner.runCommand("SpiderOak", QStringList());
+}

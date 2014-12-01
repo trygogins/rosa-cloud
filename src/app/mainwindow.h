@@ -28,6 +28,8 @@ public:
 private slots:
     void openFolder(QString path);
     void activateWidget(QWidget*);
+    void installDropbox();
+    void installSpiderOak();
 
 private:
     static const int ACTIVATED_COLOR = 0x95FF6B;
