@@ -29,7 +29,6 @@ private slots:
 
 private:
     Ui::AuthDialog *ui;
-    QUrl m_url;
     Provider *provider;
 };
 
