@@ -175,7 +175,7 @@ void MainWindow::installSpiderOak()
     arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
     runner.runCommand("wget", arguments);
     arguments.clear();
-    arguments << "spideroak.rpm";
+    arguments << "--force" << "spideroak.rpm";
     runner.runCommand("urpmi", arguments);
-    runner.runCommand("SpiderOak", QStringList());
+    runner.runCommand("SpiderOak", QStringList() << "&");
 }

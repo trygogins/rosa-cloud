@@ -47,7 +47,7 @@ void AuthDialog::on_buttonBox_accepted()
 
     // mount
     runner.runCommand("mkdir", QStringList() << mountPoint);
-    runner.runCommand("mount", QStringList() << url.toString());
+    runner.runCommand("sudo mount", QStringList() << url.toString());
 }
 
 void AuthDialog::on_buttonBox_rejected()
