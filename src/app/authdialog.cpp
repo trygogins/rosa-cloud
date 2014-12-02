@@ -1,8 +1,13 @@
 #include "authdialog.h"
 #include "ui_authdialog.h"
+#include "commandrunner.h"
 #include <QMessageBox>
 #include <QProcess>
-#include "commandrunner.h"
+#include <QDebug>
+
+#include <QFile>
+#include <QDir>
+#include <QTextStream>
 
 AuthDialog::AuthDialog(QWidget *parent) :
     QDialog(parent),
@@ -37,20 +42,46 @@ void AuthDialog::on_buttonBox_accepted()
     QString username = qgetenv("USER");
     QString mountPoint = "/home/" + username + "/" + name + "_folder";
 
-    QString fstabCredentials = url.toString() + " " + mountPoint + " davfs user,rw,noauto 0 0";
-    QString davfsCredentials = url.toString() + " " + login + " " + password;
-
     CommandRunner runner;
-    runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | sudo tee -a /etc/fstab");
-    runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | tee -a $HOME/.davfs2/secrets");
-    provider->setToken(QString("token!!"));
+    QFile config("/home/" + username + "/.rosa-cloud");
+    if (!isProviderInstalled(&config, name)) {
+        if (config.open(QFile::WriteOnly | QFile::Text)) {
+            QTextStream stream(&config);
+            stream << name << endl;
+            config.close();
+        }
 
-    // mount
-    runner.runCommand("mkdir", QStringList() << mountPoint);
+        QString fstabCredentials = url.toString() + " " + mountPoint + " davfs user,rw,noauto 0 0";
+        QString davfsCredentials = url.toString() + " " + login + " " + password;
+
+        runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | sudo tee -a /etc/fstab");
+        runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | tee -a $HOME/.davfs2/secrets");
+        provider->setToken(QString("token!!"));
+
+        // mount
+        runner.runCommand("mkdir", QStringList() << mountPoint);
+    }
+
     runner.runCommand("mount", QStringList() << url.toString());
 }
 
 void AuthDialog::on_buttonBox_rejected()
 {
 
+}
+
+bool AuthDialog::isProviderInstalled(QFile *configFile, QString name)
+{
+    if (configFile->open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream stream(configFile);
+        QString providerName;
+        do {
+            providerName = stream.readLine();
+            if (providerName.compare(name) == 0) {
+                return true;
+            }
+        } while (!providerName.isNull());
+    }
+
+    return false;
 }

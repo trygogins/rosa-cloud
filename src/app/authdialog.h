@@ -1,6 +1,7 @@
 #ifndef AUTHDIALOG_H
 #define AUTHDIALOG_H
 
+#include <QFile>
 #include <QDialog>
 #include <QAbstractButton>
 #include <QUrl>
@@ -26,6 +27,8 @@ private slots:
     void on_buttonBox_accepted();
 
     void on_buttonBox_rejected();
+
+    bool isProviderInstalled(QFile *configFile, QString name);
 
 private:
     Ui::AuthDialog *ui;

@@ -122,7 +122,7 @@ void MainWindow::addItem(int index)
 
     QPushButton *settingsButton = createSettingsButton(provider);
 
-    QString path = "/";
+    QString path = "/home/" + qgetenv("USER") + "/" + provider->name() + "_folder";
     QPushButton *openButton = createOpenButton(path);
 
     QLabel *label = new QLabel(provider->title());
