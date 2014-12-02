@@ -26,20 +26,23 @@ MainWindow::MainWindow(QWidget *parent) :
     if (readConfig()) {
         fillProviderModel();
     }
-
-    connect(ui->pushButton1, SIGNAL(clicked()), this, SLOT(installDropbox()));
-    connect(ui->pushButton2, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
 }
 
 void MainWindow::fillProviderModel()
 {
     QJsonArray providers = m_config["providers"].toArray();
     for (QJsonArray::const_iterator it = providers.constBegin(); it != providers.constEnd(); ++it) {
+        Provider *prd;
         QJsonObject provider = (*it).toObject();
         QString name = provider.value("name").toString();
         QString title = provider.value("title").toString();
         QString url = provider.value("url").toString();
-        Provider *prd = new Provider(name, title, url);
+        QJsonValue hasClient = provider.value("hasClient");
+        if (!hasClient.isNull()) {
+            prd = new Provider(name, title, url, hasClient.toBool());
+        } else {
+            prd = new Provider(name, title, url);
+        }
         m_providers.push_back(prd);
         addItem(m_providers.size() - 1);
     }
@@ -92,11 +95,20 @@ QPushButton* MainWindow::createSettingsButton(Provider *provider)
 {
     //TODO: create dialog only when buton is clicked
     QPushButton *settingsButton = new QPushButton(tr("Настройки"));
-    AuthDialog *authDialog = new AuthDialog(this);
-    QSignalMapper *signalMapper = new QSignalMapper(this);
-    connect(settingsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(settingsButton, provider);
-    connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(openAuthDialog(QObject*)));
+    if (provider->hasClient()) {
+        if (provider->name() == "dropbox") {
+            connect(settingsButton, SIGNAL(clicked()), this, SLOT(installDropbox()));
+        }
+        if (provider->name() == "spideroak") {
+            connect(settingsButton, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
+        }
+    } else {
+        AuthDialog *authDialog = new AuthDialog(this);
+        QSignalMapper *signalMapper = new QSignalMapper(this);
+        connect(settingsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+        signalMapper->setMapping(settingsButton, provider);
+        connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(openAuthDialog(QObject*)));
+    }
 
     return settingsButton;
 }
