@@ -27,7 +27,7 @@ public:
 
 private slots:
     void openFolder(QString path);
-    void activateWidget(QWidget*);
+    void changeWidget(QWidget*);
     void installDropbox();
     void installSpiderOak();
 

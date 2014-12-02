@@ -28,6 +28,11 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 }
 
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
 void MainWindow::fillProviderModel()
 {
     QJsonArray providers = m_config["providers"].toArray();
@@ -67,7 +72,7 @@ void MainWindow::openFolder(QString path) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-void MainWindow::activateWidget(QWidget *widget)
+void MainWindow::changeWidget(QWidget *widget)
 {
     QPalette pal = widget->palette();
     int color = pal.color(QPalette::Base) == ACTIVATED_COLOR ? DEACTIVATED_COLOR : ACTIVATED_COLOR;
@@ -87,7 +92,7 @@ QWidget* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(provider, SIGNAL(activated()), signalMapper, SLOT(map()));
     signalMapper->setMapping(provider, widget);
-    connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(activateWidget(QWidget*)));
+    connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(changeWidget(QWidget*)));
 
     return widget;
 }
@@ -152,11 +157,6 @@ void MainWindow::addItem(int index)
 
     item->setSizeHint(widget->sizeHint());
     ui->providerView->setItemWidget(item, widget);
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::installDropbox()
