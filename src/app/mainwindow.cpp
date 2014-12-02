@@ -70,7 +70,8 @@ void MainWindow::openFolder(QString path) {
 void MainWindow::activateWidget(QWidget *widget)
 {
     QPalette pal = widget->palette();
-    pal.setColor(QPalette::Base, ACTIVATED_COLOR);
+    int color = pal.color(QPalette::Base) == ACTIVATED_COLOR ? DEACTIVATED_COLOR : ACTIVATED_COLOR;
+    pal.setColor(QPalette::Base, color);
     widget->setPalette(pal);
 }
 
