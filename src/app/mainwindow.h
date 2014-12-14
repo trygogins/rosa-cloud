@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include "provider.h"
+#include "authdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,10 +40,11 @@ private:
     bool readConfig();
     void addItem(int index);
 
-    QWidget *createWidget(Provider*, QHBoxLayout*);
+    QFrame *createWidget(Provider*, QHBoxLayout*);
     QPushButton* createSettingsButton(Provider *);
     QPushButton* createOpenButton(const QString &);
 
+    AuthDialog *authDialog;
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;

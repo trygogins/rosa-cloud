@@ -18,7 +18,7 @@
         },
         {
             "name" : "yandex_disk",
-            "title" : "Yandex Disk",
+            "title" : "Yandex_Disk",
             "url" : "https://webdav.yandex.ru"
         },
         {
