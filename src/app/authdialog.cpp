@@ -54,7 +54,7 @@ void AuthDialog::on_buttonBox_accepted()
         QString fstabCredentials = url.toString() + " " + mountPoint + " davfs user,rw,noauto 0 0";
         QString davfsCredentials = url.toString() + " " + login + " " + password;
 
-        runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | sudo tee -a /etc/fstab");
+        runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | gksudo tee -a /etc/fstab");
         runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | tee -a $HOME/.davfs2/secrets");
         provider->setToken(QString("token!!"));
 
