@@ -16,13 +16,11 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     commandrunner.cpp \
-    filedownloader.cpp \
     authdialog.cpp
 
 HEADERS += \
     mainwindow.h \
     commandrunner.h \
-    filedownloader.h \
     authdialog.h \
     ../providerdelegate.h \
     provider.h

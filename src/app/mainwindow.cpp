@@ -26,20 +26,28 @@ MainWindow::MainWindow(QWidget *parent) :
     if (readConfig()) {
         fillProviderModel();
     }
+}
 
-    connect(ui->pushButton1, SIGNAL(clicked()), this, SLOT(installDropbox()));
-    connect(ui->pushButton2, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
+MainWindow::~MainWindow()
+{
+    delete ui;
 }
 
 void MainWindow::fillProviderModel()
 {
     QJsonArray providers = m_config["providers"].toArray();
     for (QJsonArray::const_iterator it = providers.constBegin(); it != providers.constEnd(); ++it) {
+        Provider *prd;
         QJsonObject provider = (*it).toObject();
         QString name = provider.value("name").toString();
         QString title = provider.value("title").toString();
         QString url = provider.value("url").toString();
-        Provider *prd = new Provider(name, title, url);
+        QJsonValue hasClient = provider.value("hasClient");
+        if (!hasClient.isNull()) {
+            prd = new Provider(name, title, url, hasClient.toBool());
+        } else {
+            prd = new Provider(name, title, url);
+        }
         m_providers.push_back(prd);
         addItem(m_providers.size() - 1);
     }
@@ -64,10 +72,11 @@ void MainWindow::openFolder(QString path) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-void MainWindow::activateWidget(QWidget *widget)
+void MainWindow::changeWidget(QWidget *widget)
 {
     QPalette pal = widget->palette();
-    pal.setColor(QPalette::Base, ACTIVATED_COLOR);
+    int color = pal.color(QPalette::Base) == ACTIVATED_COLOR ? DEACTIVATED_COLOR : ACTIVATED_COLOR;
+    pal.setColor(QPalette::Base, color);
     widget->setPalette(pal);
 }
 
@@ -83,7 +92,7 @@ QWidget* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(provider, SIGNAL(activated()), signalMapper, SLOT(map()));
     signalMapper->setMapping(provider, widget);
-    connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(activateWidget(QWidget*)));
+    connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(changeWidget(QWidget*)));
 
     return widget;
 }
@@ -92,11 +101,20 @@ QPushButton* MainWindow::createSettingsButton(Provider *provider)
 {
     //TODO: create dialog only when buton is clicked
     QPushButton *settingsButton = new QPushButton(tr("Настройки"));
-    AuthDialog *authDialog = new AuthDialog(this);
-    QSignalMapper *signalMapper = new QSignalMapper(this);
-    connect(settingsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(settingsButton, provider);
-    connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(openAuthDialog(QObject*)));
+    if (provider->hasClient()) {
+        if (provider->name() == "dropbox") {
+            connect(settingsButton, SIGNAL(clicked()), this, SLOT(installDropbox()));
+        }
+        if (provider->name() == "spideroak") {
+            connect(settingsButton, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
+        }
+    } else {
+        AuthDialog *authDialog = new AuthDialog(this);
+        QSignalMapper *signalMapper = new QSignalMapper(this);
+        connect(settingsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+        signalMapper->setMapping(settingsButton, provider);
+        connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(openAuthDialog(QObject*)));
+    }
 
     return settingsButton;
 }
@@ -141,11 +159,6 @@ void MainWindow::addItem(int index)
     ui->providerView->setItemWidget(item, widget);
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
 void MainWindow::installDropbox()
 {
     CommandRunner runner;
@@ -162,7 +175,7 @@ void MainWindow::installSpiderOak()
     arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
     runner.runCommand("wget", arguments);
     arguments.clear();
-    arguments << "urpmi" << "spideroak.rpm";
+    arguments << "urpmi" << "--force" << "spideroak.rpm";
     runner.runCommand("gksudo", arguments);
-    runner.runCommand("SpiderOak", QStringList());
+    runner.runCommand("SpiderOak", QStringList() << "&");
 }
