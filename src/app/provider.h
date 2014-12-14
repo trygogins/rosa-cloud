@@ -59,7 +59,7 @@ public:
     void setToken(const QString &token)
     {
         m_token = token;
-        activated();
+        emit activated();
     }
 
 signals:

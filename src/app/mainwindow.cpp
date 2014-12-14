@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    authDialog = new AuthDialog(this);
     if (readConfig()) {
         fillProviderModel();
     }
@@ -75,20 +76,24 @@ void MainWindow::openFolder(QString path) {
 void MainWindow::changeWidget(QWidget *widget)
 {
     QPalette pal = widget->palette();
-    int color = pal.color(QPalette::Base) == ACTIVATED_COLOR ? DEACTIVATED_COLOR : ACTIVATED_COLOR;
+    bool isDeactivated = pal.color(QPalette::Base) == ACTIVATED_COLOR;
+    int color = isDeactivated ? DEACTIVATED_COLOR : ACTIVATED_COLOR;
     pal.setColor(QPalette::Base, color);
+    QPushButton* connButton = widget->findChild<QPushButton*>("conn");
+    connButton->setText(isDeactivated ? "Установить" : "Настройки");
     widget->setPalette(pal);
 }
 
-QWidget* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
+QFrame* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
 {
-    QWidget *widget = new QWidget();
+    QFrame *widget = new QFrame();
     widget->setAutoFillBackground(true);
     QPalette pal = widget->palette();
     pal.setColor(QPalette::Base, DEACTIVATED_COLOR);
     widget->setPalette(pal);
     widget->setLayout(hLayout);
-
+    widget->setFrameShape(QFrame::Box);
+    widget->setLineWidth(1);
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(provider, SIGNAL(activated()), signalMapper, SLOT(map()));
     signalMapper->setMapping(provider, widget);
@@ -99,30 +104,28 @@ QWidget* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
 
 QPushButton* MainWindow::createSettingsButton(Provider *provider)
 {
-    //TODO: create dialog only when buton is clicked
-    QPushButton *settingsButton = new QPushButton(tr("Настройки"));
+    QPushButton *connButton = new QPushButton(tr("Установить"));
+    connButton->setObjectName("conn");
     if (provider->hasClient()) {
         if (provider->name() == "dropbox") {
-            connect(settingsButton, SIGNAL(clicked()), this, SLOT(installDropbox()));
+            connect(connButton, SIGNAL(clicked()), this, SLOT(installDropbox()));
         }
         if (provider->name() == "spideroak") {
-            connect(settingsButton, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
+            connect(connButton, SIGNAL(clicked()), this, SLOT(installSpiderOak()));
         }
     } else {
-        AuthDialog *authDialog = new AuthDialog(this);
         QSignalMapper *signalMapper = new QSignalMapper(this);
-        connect(settingsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
-        signalMapper->setMapping(settingsButton, provider);
+        connect(connButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+        signalMapper->setMapping(connButton, provider);
         connect(signalMapper, SIGNAL(mapped(QObject*)), authDialog, SLOT(openAuthDialog(QObject*)));
-    }
 
-    return settingsButton;
+    }
+    return connButton;
 }
 
 QPushButton* MainWindow::createOpenButton(const QString &path)
 {
     QPushButton *openButton = new QPushButton(tr("Открыть папку"));
-
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(openButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
     signalMapper->setMapping(openButton, path);
@@ -153,7 +156,7 @@ void MainWindow::addItem(int index)
     hLayout->addWidget(label);
     hLayout->addLayout(vLayout);
 
-    QWidget *widget = createWidget(provider, hLayout);
+    QFrame *widget = createWidget(provider, hLayout);
 
     item->setSizeHint(widget->sizeHint());
     ui->providerView->setItemWidget(item, widget);
@@ -163,8 +166,8 @@ void MainWindow::installDropbox()
 {
     CommandRunner runner;
     QStringList arguments;
-    arguments << "kfilebox";
-    runner.runCommand("urpmi", arguments);
+    arguments << "urpmi" << "kfilebox";
+    runner.runCommand("gksudo ", arguments);
     runner.runCommand("kfilebox", QStringList());
 }
 
@@ -175,7 +178,7 @@ void MainWindow::installSpiderOak()
     arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
     runner.runCommand("wget", QStringList() << "yandex.ru" << "&");
     arguments.clear();
-    //arguments << "--force" << "spideroak.rpm";
-    //runner.runCommand("urpmi", arguments);
-    //runner.runCommand("SpiderOak", QStringList() << "&");
+    arguments << "urpmi" << "--force" << "spideroak.rpm";
+    runner.runCommand("gksudo", arguments);
+    runner.runCommand("SpiderOak", QStringList() << "&");
 }
