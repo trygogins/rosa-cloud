@@ -166,8 +166,8 @@ void MainWindow::installDropbox()
 {
     CommandRunner runner;
     QStringList arguments;
-    arguments << "kfilebox";
-    runner.runCommand("urpmi", arguments);
+    arguments << "urpmi" << "kfilebox";
+    runner.runCommand("gksudo ", arguments);
     runner.runCommand("kfilebox", QStringList());
 }
 
@@ -178,7 +178,7 @@ void MainWindow::installSpiderOak()
     arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
     runner.runCommand("wget", arguments);
     arguments.clear();
-    arguments << "--force" << "spideroak.rpm";
-    runner.runCommand("urpmi", arguments);
+    arguments << "urpmi" << "--force" << "spideroak.rpm";
+    runner.runCommand("gksudo", arguments);
     runner.runCommand("SpiderOak", QStringList() << "&");
 }
