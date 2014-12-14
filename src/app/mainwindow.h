@@ -38,7 +38,8 @@ private:
 
     void fillProviderModel();
     bool readConfig();
-    void addItem(int index);
+    void addItem(Provider* provider);
+    void checkInstalled();
 
     QFrame *createWidget(Provider*, QHBoxLayout*);
     QPushButton* createSettingsButton(Provider *);
@@ -49,7 +50,8 @@ private:
     AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;
 
-    QList<Provider*> m_providers;
+    //QList<Provider*> m_providers;
+    QMap<QString*, Provider*> m_providers;
 };
 
 #endif // MAINWINDOW_H

@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (readConfig()) {
         fillProviderModel();
     }
+    checkInstalled();
 }
 
 MainWindow::~MainWindow()
@@ -49,9 +50,22 @@ void MainWindow::fillProviderModel()
         } else {
             prd = new Provider(name, title, url);
         }
-        m_providers.push_back(prd);
-        addItem(m_providers.size() - 1);
+        m_providers.insert(&name, prd);
+        addItem(m_providers[&name]);
     }
+}
+
+void MainWindow::checkInstalled() {
+    QString username = qgetenv("USER");
+    QFile config("/home/" + username + "/.rosa-cloud");
+    QTextStream stream(&config);
+    QString providerName;
+    do {
+        providerName = stream.readLine();
+        if (m_providers[&providerName]) {
+            m_providers[&providerName]->setActivated(true);
+        }
+    } while (!providerName.isNull());
 }
 
 bool MainWindow::readConfig()
@@ -81,6 +95,8 @@ void MainWindow::changeWidget(QWidget *widget)
     pal.setColor(QPalette::Base, color);
     QPushButton* connButton = widget->findChild<QPushButton*>("conn");
     connButton->setText(isDeactivated ? "Установить" : "Настройки");
+    QPushButton *openButton = widget->findChild<QPushButton*>("open");
+    openButton->setDisabled(false);
     widget->setPalette(pal);
 }
 
@@ -126,6 +142,8 @@ QPushButton* MainWindow::createSettingsButton(Provider *provider)
 QPushButton* MainWindow::createOpenButton(const QString &path)
 {
     QPushButton *openButton = new QPushButton(tr("Открыть папку"));
+    openButton->setObjectName("open");
+    openButton->setDisabled(true);
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(openButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
     signalMapper->setMapping(openButton, path);
@@ -134,9 +152,9 @@ QPushButton* MainWindow::createOpenButton(const QString &path)
     return openButton;
 }
 
-void MainWindow::addItem(int index)
+void MainWindow::addItem(Provider* provider)
 {
-    Provider *provider = m_providers[index];
+    //Provider *provider = m_providers[index];
 
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);

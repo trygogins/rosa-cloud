@@ -75,7 +75,6 @@ void AuthDialog::on_pushButton_clicked()
 
         runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | gksudo tee -a /etc/fstab");
         runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | tee -a $HOME/.davfs2/secrets");
-        provider->setToken(QString("token!!"));
 
         runner.runCommand("mkdir", QStringList() << mountPoint);
     }
@@ -83,14 +82,16 @@ void AuthDialog::on_pushButton_clicked()
     runner.runCommand("mount", QStringList() << url.toString());
 
     //message for ui to change
-    provider->setToken(QString("token!!"));
+    provider->setActivated(true);
 
     this->close();
 }
 
 void AuthDialog::on_pushButton_2_clicked()
 {
+    provider->setActivated(false);
     //unmount
+    this->close();
 }
 
 bool AuthDialog::isProviderInstalled(QFile *configFile, QString name)
