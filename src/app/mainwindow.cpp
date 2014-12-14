@@ -154,8 +154,6 @@ QPushButton* MainWindow::createOpenButton(const QString &path)
 
 void MainWindow::addItem(Provider* provider)
 {
-    //Provider *provider = m_providers[index];
-
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);
 

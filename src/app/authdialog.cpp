@@ -51,8 +51,8 @@ void AuthDialog::on_pushButton_clicked()
         egn = QInputDialog::getText(this, tr("QInputDialog::getText()"),
                                                  tr("URL:"), QLineEdit::Normal,
                                                  QDir::home().dirName(), &ok);
-        if (ok && !egn.isEmpty()) {
-                 //action
+        if (!ok || egn.isEmpty()) {
+                 //action if error
         }
     }
     QUrl url = provider->url();
@@ -63,7 +63,7 @@ void AuthDialog::on_pushButton_clicked()
 
     CommandRunner runner;
     QFile config("/home/" + username + "/.rosa-cloud");
-    if (!isProviderInstalled(&config, name)) {
+    if (!(provider->isActive())) {
         if (config.open(QFile::WriteOnly | QFile::Text)) {
             QTextStream stream(&config);
             stream << name << endl;
@@ -92,20 +92,4 @@ void AuthDialog::on_pushButton_2_clicked()
     provider->setActivated(false);
     //unmount
     this->close();
-}
-
-bool AuthDialog::isProviderInstalled(QFile *configFile, QString name)
-{
-    if (configFile->open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream stream(configFile);
-        QString providerName;
-        do {
-            providerName = stream.readLine();
-            if (providerName.compare(name) == 0) {
-                return true;
-            }
-        } while (!providerName.isNull());
-    }
-
-    return false;
 }
