@@ -4,14 +4,20 @@
 #include <QProcess>
 #include <QObject>
 
-class CommandRunner //: public QObject
+class CommandRunner : public QObject
 {
+    Q_OBJECT
+
 public:
     CommandRunner();
 
     void runCommand(QString command, QStringList arguments);
-//private slots:
-  //  void readyReadStandardOutput(QProcess process);
-  //void readyReadStandardError(QProcess process);
+
+public slots:
+    void readyReadStandardOutput();
+    void readyReadStandardError();
+
+private:
+    QProcess* process;
 };
 #endif // COMMANDRUNNER_H
