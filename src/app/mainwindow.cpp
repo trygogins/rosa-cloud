@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "authdialog.h"
 #include "commandrunner.h"
+#include "spinbox.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
         fillProviderModel();
     }
     checkInstalled();
+    Spinbox *sp = new Spinbox();
+    sp->show();
 }
 
 MainWindow::~MainWindow()

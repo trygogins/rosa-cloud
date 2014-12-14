@@ -16,22 +16,27 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     commandrunner.cpp \
-    authdialog.cpp
+    authdialog.cpp \
+    spinbox.cpp
 
 HEADERS += \
     mainwindow.h \
     commandrunner.h \
     authdialog.h \
     ../providerdelegate.h \
-    provider.h
+    provider.h \
+    spinbox.h
 
 FORMS += \
     mainwindow.ui \
-    authdialog.ui
+    authdialog.ui \
+    spinbox.ui
 
 DISTFILES += \
     config.js
 
 RESOURCES += \
     resources.qrc
+
+OTHER_FILES +=
 
