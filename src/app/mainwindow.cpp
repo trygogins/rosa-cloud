@@ -53,22 +53,24 @@ void MainWindow::fillProviderModel()
         } else {
             prd = new Provider(name, title, url);
         }
-        m_providers.insert(&name, prd);
-        addItem(m_providers[&name]);
+        m_providers.insert(name, prd);
+        addItem(m_providers[name]);
     }
 }
 
 void MainWindow::checkInstalled() {
     QString username = qgetenv("USER");
     QFile config("/home/" + username + "/.rosa-cloud");
-    QTextStream stream(&config);
-    QString providerName;
-    do {
-        providerName = stream.readLine();
-        if (m_providers[&providerName]) {
-            m_providers[&providerName]->setActivated(true);
-        }
-    } while (!providerName.isNull());
+    if (config.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream stream(&config);
+        QString providerName;
+        do {
+            providerName = stream.readLine();
+            if (m_providers[providerName]) {
+                m_providers[providerName]->setActivated(true);
+            }
+        } while (!providerName.isNull());
+    }
 }
 
 bool MainWindow::readConfig()

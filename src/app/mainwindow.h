@@ -51,7 +51,7 @@ private:
     QJsonObject m_config;
 
     //QList<Provider*> m_providers;
-    QMap<QString*, Provider*> m_providers;
+    QMap<QString, Provider*> m_providers;
 };
 
 #endif // MAINWINDOW_H
