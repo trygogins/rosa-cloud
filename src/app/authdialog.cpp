@@ -64,23 +64,19 @@ void AuthDialog::on_pushButton_clicked()
     CommandRunner runner;
     QFile config("/home/" + username + "/.rosa-cloud");
     if (!(provider->isActive())) {
-        if (config.open(QFile::WriteOnly | QFile::Text)) {
+        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
             QTextStream stream(&config);
             stream << name << endl;
             config.close();
         }
 
-        QString fstabCredentials = url.toString() + " " + mountPoint + " davfs user,rw,noauto 0 0";
         QString davfsCredentials = url.toString() + " " + login + " " + password;
 
-        runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | gksudo tee -a /etc/fstab");
-        runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | tee -a $HOME/.davfs2/secrets");
-
+        runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | pkexec --user root tee -a /etc/davfs2/secrets");
         runner.runCommand("mkdir", QStringList() << mountPoint);
     }
     // mount
-    runner.runCommand("mount", QStringList() << url.toString());
-
+    runner.runCommand("sh", QStringList() << "-c" << "pkexec --user root mount -t davfs -o rw " + url.toString() + " " + mountPoint);
     //message for ui to change
     provider->setActivated(true);
 
@@ -91,5 +87,11 @@ void AuthDialog::on_pushButton_2_clicked()
 {
     provider->setActivated(false);
     //unmount
+    QString name = provider->name();
+    QString username = qgetenv("USER");
+    QString mountPoint = "/home/" + username + "/" + name + "_folder";
+    CommandRunner runner;
+    runner.runCommand("sh", QStringList() << "-c" << "pkexec --user root umount -t davfs " + mountPoint);
+
     this->close();
 }
