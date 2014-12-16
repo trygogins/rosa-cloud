@@ -186,7 +186,7 @@ void MainWindow::addItem(Provider* provider)
 void MainWindow::installDropbox()
 {
     CommandRunner runner;
-    runner.runCommand("urpmi", QStringList() << "kfilebox");
+    runner.runCommand("urpmi", QStringList() << "--force" << "kfilebox");
     runner.runCommand("kfilebox", QStringList());
 }
 
