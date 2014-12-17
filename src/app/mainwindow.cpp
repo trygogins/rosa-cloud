@@ -164,7 +164,7 @@ void MainWindow::addItem(Provider* provider)
 
     QPushButton *settingsButton = createSettingsButton(provider);
 
-    QString path = "/";
+    QString path = "/home/" + qgetenv("USER") + "/" + provider->name() + "_folder";
     QPushButton *openButton = createOpenButton(path);
 
     QLabel *label = new QLabel(provider->title());
@@ -185,17 +185,41 @@ void MainWindow::addItem(Provider* provider)
 
 void MainWindow::installDropbox()
 {
+    Provider* provider = m_providers["dropbox"];
     CommandRunner runner;
-    runner.runCommand("urpmi", QStringList() << "--force" << "kfilebox");
+    if (!(provider->isActive())) {
+        QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
+        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream stream(&config);
+            stream << provider->name() << endl;
+            config.close();
+        }
+
+        runner.runCommand("urpmi", QStringList() << "kfilebox");
+        provider->setActivated(true);
+    }
+
     runner.runCommand("kfilebox", QStringList());
 }
 
 void MainWindow::installSpiderOak()
 {
+    Provider* provider = m_providers["spideroak"];
     CommandRunner runner;
-    QStringList arguments;
-    arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
-    runner.runCommand("wget", arguments);
-    runner.runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
+    if (!(provider->isActive())) {
+        QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
+        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream stream(&config);
+            stream << provider->name() << endl;
+            config.close();
+        }
+
+        QStringList arguments;
+        arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
+        runner.runCommand("wget", arguments);
+        runner.runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
+        provider->setActivated(true);
+    }
+
     runner.runCommand("nohup", QStringList() << "SpiderOak" << "&");
 }

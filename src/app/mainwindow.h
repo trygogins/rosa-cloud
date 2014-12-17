@@ -50,7 +50,6 @@ private:
     AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;
 
-    //QList<Provider*> m_providers;
     QMap<QString, Provider*> m_providers;
 };
 
