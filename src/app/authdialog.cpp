@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QDir>
 #include "commandrunner.h"
+#include "spinbox.h"
 
 #include <QDebug>
 
@@ -43,19 +44,25 @@ void AuthDialog::openAuthDialog(QObject *o_provider)
 
 void AuthDialog::on_pushButton_clicked()
 {
-    QString sudoPassword = ""; // INSERT YOUR ROOT PASSWORD HERE
+    if (sudoPassword.isNull()) {
+        sudoPassword = askRoot();
+    }
+    //TODO: handle invalid password
     QString name = provider->name();
     //url for egnyte
     QString egn;
     if (name == "egnyte") {
         bool ok;
-        egn = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+        egn = QInputDialog::getText(this, tr("Введите путь до хранилища"),
                                                  tr("URL:"), QLineEdit::Normal,
                                                  QDir::home().dirName(), &ok);
         if (!ok || egn.isEmpty()) {
                  //action if error
         }
     }
+    Spinbox *sp = new Spinbox();
+    sp->show();
+
     QUrl url = provider->url();
     QString login = ui->loginEdit->text();
     QString password = ui->passwordEdit->text();
@@ -82,13 +89,17 @@ void AuthDialog::on_pushButton_clicked()
     //message for ui to change
     provider->setActivated(true);
 
+    sp->close();
     this->close();
 }
 
 void AuthDialog::on_pushButton_2_clicked()
 {
+    if (sudoPassword.isNull()) {
+        sudoPassword = askRoot();
+    }
+    //TODO: handle invalid password
     provider->setActivated(false);
-    QString sudoPassword = ""; // INSERT YOUR ROOT PASSWORD HERE
     //unmount
     QString name = provider->name();
     QString username = qgetenv("USER");
@@ -97,4 +108,15 @@ void AuthDialog::on_pushButton_2_clicked()
     runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
 
     this->close();
+}
+
+QString AuthDialog::askRoot() {
+    bool ok;
+    QString res = QInputDialog::getText(this, tr("Введите Root пароль"),
+                                             tr("Пароль:"), QLineEdit::Password,
+                                             QDir::home().dirName(), &ok);
+    if (!ok || res.isEmpty()) {
+             //action if error
+    }
+    return res;
 }

@@ -29,8 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
         fillProviderModel();
     }
     checkInstalled();
-    Spinbox *sp = new Spinbox();
-    sp->show();
 }
 
 MainWindow::~MainWindow()
@@ -101,7 +99,7 @@ void MainWindow::changeWidget(QWidget *widget)
     QPushButton* connButton = widget->findChild<QPushButton*>("conn");
     connButton->setText(isDeactivated ? "Установить" : "Настройки");
     QPushButton *openButton = widget->findChild<QPushButton*>("open");
-    openButton->setDisabled(false);
+    openButton->setDisabled(isDeactivated ? true : false);
     widget->setPalette(pal);
 }
 
