@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     a.setApplicationDisplayName("Rosa Cloud");
     MainWindow w;
     w.show();
+    w.postInit();
 
     return a.exec();
 }

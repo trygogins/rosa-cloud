@@ -12,11 +12,12 @@
 #include <QFile>
 #include <QTextStream>
 
-AuthDialog::AuthDialog(QWidget *parent) :
+AuthDialog::AuthDialog(QString sudoPassword, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AuthDialog)
 {
     ui->setupUi(this);
+    this->sudoPassword = sudoPassword;
 }
 
 AuthDialog::~AuthDialog()
@@ -44,10 +45,6 @@ void AuthDialog::openAuthDialog(QObject *o_provider)
 
 void AuthDialog::on_pushButton_clicked()
 {
-    if (sudoPassword.isNull()) {
-        sudoPassword = askRoot();
-    }
-    //TODO: handle invalid password
     QString name = provider->name();
     //url for egnyte
     QString egn;
@@ -95,10 +92,6 @@ void AuthDialog::on_pushButton_clicked()
 
 void AuthDialog::on_pushButton_2_clicked()
 {
-    if (sudoPassword.isNull()) {
-        sudoPassword = askRoot();
-    }
-    //TODO: handle invalid password
     provider->setActivated(false);
     //unmount
     QString name = provider->name();
@@ -108,15 +101,4 @@ void AuthDialog::on_pushButton_2_clicked()
     runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
 
     this->close();
-}
-
-QString AuthDialog::askRoot() {
-    bool ok;
-    QString res = QInputDialog::getText(this, tr("Введите Root пароль"),
-                                             tr("Пароль:"), QLineEdit::Password,
-                                             QDir::home().dirName(), &ok);
-    if (!ok || res.isEmpty()) {
-             //action if error
-    }
-    return res;
 }

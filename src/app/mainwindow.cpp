@@ -12,6 +12,7 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <QDesktopServices>
+#include <QInputDialog>
 
 #include <QSignalMapper>
 
@@ -24,16 +25,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    authDialog = new AuthDialog(this);
-    if (readConfig()) {
-        fillProviderModel();
-    }
-    checkInstalled();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::postInit() {
+    if (sudoPassword.isNull()) {
+        sudoPassword = askRoot();
+    }
+    authDialog = new AuthDialog(sudoPassword, this);
+    if (readConfig()) {
+        fillProviderModel();
+    }
+    checkInstalled();
 }
 
 void MainWindow::fillProviderModel()
@@ -240,4 +247,15 @@ void MainWindow::installSpiderOak()
     } else {
         (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
     }
+}
+
+QString MainWindow::askRoot() {
+    bool ok;
+    QString res = QInputDialog::getText(this, tr("Введите Root пароль"),
+                                        tr("Пароль:"), QLineEdit::Password,
+                                         "", &ok);
+    if (!ok || res.isEmpty()) {
+             //action if error
+    }
+    return res;
 }

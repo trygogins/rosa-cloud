@@ -25,6 +25,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void postInit();
 
 private slots:
     void openFolder(QString path);
@@ -37,12 +38,13 @@ private slots:
 private:
     static const int ACTIVATED_COLOR = 0x95FF6B;
     static const int DEACTIVATED_COLOR = 0xFF917A;
+    QString sudoPassword;
 
     void fillProviderModel();
     bool readConfig();
     void addItem(Provider* provider);
     void checkInstalled();
-
+    QString askRoot();
     void executeCommand(const QString&, const QStringList&);
 
     QFrame *createWidget(Provider*, QHBoxLayout*);
@@ -53,6 +55,7 @@ private:
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;
+
 
     QMap<QString, Provider*> m_providers;
 };

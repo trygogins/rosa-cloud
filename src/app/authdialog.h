@@ -17,7 +17,7 @@ class AuthDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AuthDialog(QWidget *parent = 0);
+    explicit AuthDialog(QString sudoPassword, QWidget *parent = 0);
     ~AuthDialog();
 
 public slots:
@@ -32,9 +32,7 @@ private slots:
 private:
     Ui::AuthDialog *ui;
     Provider *provider;
-    QString sudoPassword; // INSERT YOUR ROOT PASSWORD HERE
-
-    QString askRoot();
+    QString sudoPassword;
 };
 
 #endif // AUTHDIALOG_H
