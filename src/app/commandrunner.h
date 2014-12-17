@@ -16,6 +16,8 @@ public:
 public slots:
     void readyReadStandardOutput();
     void readyReadStandardError();
+    void finished(int);
+    void stateChanged(QProcess::ProcessState);
 
 private:
     QProcess* process;

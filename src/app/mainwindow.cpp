@@ -166,9 +166,10 @@ void MainWindow::installDropbox()
 {
     CommandRunner runner;
     QStringList arguments;
-    arguments << "urpmi" << "kfilebox";
-    runner.runCommand("gksudo ", arguments);
-    runner.runCommand("kfilebox", QStringList());
+    //arguments << "urpmi" << "kfilebox";
+    //runner.runCommand("gksudo ", arguments);
+    //runner.runCommand("kfilebox", QStringList());
+    runner.runCommand("wget", QStringList() << "ya.ru");
 }
 
 void MainWindow::installSpiderOak()
