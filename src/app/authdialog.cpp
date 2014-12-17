@@ -43,6 +43,7 @@ void AuthDialog::openAuthDialog(QObject *o_provider)
 
 void AuthDialog::on_pushButton_clicked()
 {
+    QString sudoPassword = ""; // INSERT YOUR ROOT PASSWORD HERE
     QString name = provider->name();
     //url for egnyte
     QString egn;
@@ -72,11 +73,12 @@ void AuthDialog::on_pushButton_clicked()
 
         QString davfsCredentials = url.toString() + " " + login + " " + password;
 
-        runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | pkexec --user root tee -a /etc/davfs2/secrets");
+        runner.runCommandAsRoot(sudoPassword,
+                                "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
         runner.runCommand("mkdir", QStringList() << mountPoint);
     }
     // mount
-    runner.runCommand("sh", QStringList() << "-c" << "pkexec --user root mount -t davfs -o rw " + url.toString() + " " + mountPoint);
+    runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
     //message for ui to change
     provider->setActivated(true);
 
@@ -86,12 +88,13 @@ void AuthDialog::on_pushButton_clicked()
 void AuthDialog::on_pushButton_2_clicked()
 {
     provider->setActivated(false);
+    QString sudoPassword = ""; // INSERT YOUR ROOT PASSWORD HERE
     //unmount
     QString name = provider->name();
     QString username = qgetenv("USER");
     QString mountPoint = "/home/" + username + "/" + name + "_folder";
     CommandRunner runner;
-    runner.runCommand("sh", QStringList() << "-c" << "pkexec --user root umount -t davfs " + mountPoint);
+    runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
 
     this->close();
 }
