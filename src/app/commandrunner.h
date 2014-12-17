@@ -10,8 +10,6 @@ public:
     CommandRunner();
 
     void runCommand(QString command, QStringList arguments);
-//private slots:
-  //  void readyReadStandardOutput(QProcess process);
-  //void readyReadStandardError(QProcess process);
+    void runCommandAsRoot(QString sudoPassword, QString command);
 };
 #endif // COMMANDRUNNER_H
