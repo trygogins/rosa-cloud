@@ -9,7 +9,7 @@ class CommandRunner : public QObject
     Q_OBJECT
 
 public:
-    explicit CommandRunner() : QObject() {}
+    explicit CommandRunner(bool async = false) : QObject(), async(async) {}
 
     void runCommand(const QString &command, const QStringList &arguments);
 
@@ -20,7 +20,11 @@ public slots:
     void stateChanged(QProcess::ProcessState);
     void error(QProcess::ProcessError);
 
+signals:
+    void complete(int responseCode);
+
 private:
     QProcess* process;
+    bool async;
 };
 #endif // COMMANDRUNNER_H

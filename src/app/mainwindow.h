@@ -32,6 +32,8 @@ private slots:
     void installDropbox();
     void installSpiderOak();
 
+    void spiderDownloaded(int response);
+
 private:
     static const int ACTIVATED_COLOR = 0x95FF6B;
     static const int DEACTIVATED_COLOR = 0xFF917A;

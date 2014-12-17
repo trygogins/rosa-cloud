@@ -170,23 +170,31 @@ void MainWindow::executeCommand(const QString& command, const QStringList& args)
 
 void MainWindow::installDropbox()
 {
-    //arguments << "urpmi" << "kfilebox";
-    //runner.runCommand("gksudo ", arguments);
-    //runner.runCommand("kfilebox", QStringList());
+    CommandRunner* runner = new CommandRunner();
+    QStringList arguments;
+    arguments << "urpmi" << "kfilebox";
+    runner->runCommand("gksudo ", arguments);
+    runner->runCommand("kfilebox", QStringList());
+}
 
-    executeCommand("/usr/local/bin/wget", QStringList() << "-nv" << "-O" << "/Users/ernest/downloaded.txt" << "yandex.ru");
-    executeCommand("/usr/local/bin/wget", QStringList() << "-nv" << "-O" << "/Users/ernest/downloaded_with_error.txt" << "stackoverflow.com/skldfjkdslf");
-    //http://stackoverflow.com/skldfjkdslf
+void MainWindow::spiderDownloaded(int response)
+{
+    if (response != 0) {
+        // TODO: show error window
+    } else {
+        CommandRunner *runner = new CommandRunner();
+        QStringList args;
+        args << "urpmi" << "--force" << "spideroak.rpm";
+        runner->runCommand("gksudo", args);
+        runner->runCommand("SpiderOak", QStringList() << "&");
+    }
 }
 
 void MainWindow::installSpiderOak()
 {
-    CommandRunner runner;
+    CommandRunner* runner = new CommandRunner(true);
     QStringList arguments;
     arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
-    runner.runCommand("wget", QStringList() << "yandex.ru" << "&");
-    arguments.clear();
-    arguments << "urpmi" << "--force" << "spideroak.rpm";
-    runner.runCommand("gksudo", arguments);
-    runner.runCommand("SpiderOak", QStringList() << "&");
+    connect(runner, SIGNAL(complete(int)), this, SLOT(spiderDownloaded(int)));
+    runner->runCommand("wget", arguments);
 }

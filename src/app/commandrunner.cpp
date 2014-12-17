@@ -9,7 +9,11 @@ void CommandRunner::runCommand(const QString &command, const QStringList &argume
     connect(process, SIGNAL(finished(int)), this, SLOT(finished(int)));
     connect(process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChanged(QProcess::ProcessState)));
     connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
-    process->start(command, arguments);
+    if (async) {
+        process->start(command, arguments);
+    } else {
+        process->execute(command, arguments);
+    }
 }
 
 void CommandRunner::readyReadStandardOutput()
@@ -25,6 +29,7 @@ void CommandRunner::readyReadStandardError()
 void CommandRunner::finished(int res)
 {
     qDebug() << "[" << process->program() << "]" << "Finished: " << res;
+    emit complete(res);
 }
 
 void CommandRunner::stateChanged(QProcess::ProcessState newState)
@@ -36,4 +41,5 @@ void CommandRunner::error(QProcess::ProcessError error)
 {
     qDebug() << "[" << process->program() << "]" << "Error: " << error;
     qDebug() << "[" << process->program() << "]" << "Error string: " << process->errorString();
+    emit complete(- (error + 1) * 100); // used to identify errors (refactoring is welcome)
 }
