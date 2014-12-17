@@ -181,6 +181,27 @@ void MainWindow::addItem(Provider* provider)
     ui->providerView->setItemWidget(item, widget);
 }
 
+void MainWindow::executeCommand(const QString& command, const QStringList& args)
+{
+    CommandRunner *runner = new CommandRunner();
+    runner->runCommand(command, args);
+}
+
+void MainWindow::spiderDownloaded(int response)
+{
+    if (response != 0) {
+        // TODO: show error window
+    } else {
+        CommandRunner *runner = new CommandRunner();
+        QStringList args;
+        args << "urpmi" << "--force" << "spideroak.rpm";
+        runner->runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
+        runner->runCommand("SpiderOak", QStringList() << "&");
+        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
+        m_providers["spideroak"]->setActivated(true);
+    }
+}
+
 void MainWindow::installDropbox()
 {
     Provider* provider = m_providers["dropbox"];
@@ -203,7 +224,7 @@ void MainWindow::installDropbox()
 void MainWindow::installSpiderOak()
 {
     Provider* provider = m_providers["spideroak"];
-    CommandRunner runner;
+    CommandRunner* runner = new CommandRunner(true);
     if (!(provider->isActive())) {
         QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
         if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
@@ -214,10 +235,9 @@ void MainWindow::installSpiderOak()
 
         QStringList arguments;
         arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
-        runner.runCommand("wget", arguments);
-        runner.runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
-        provider->setActivated(true);
+        connect(runner, SIGNAL(complete(int)), this, SLOT(spiderDownloaded(int)));
+        runner->runCommand("wget", arguments);
+    } else {
+        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
     }
-
-    runner.runCommand("nohup", QStringList() << "SpiderOak" << "&");
 }
