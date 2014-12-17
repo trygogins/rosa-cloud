@@ -40,6 +40,8 @@ private:
     bool readConfig();
     void addItem(int index);
 
+    void executeCommand(const QString&, const QStringList&);
+
     QFrame *createWidget(Provider*, QHBoxLayout*);
     QPushButton* createSettingsButton(Provider *);
     QPushButton* createOpenButton(const QString &);

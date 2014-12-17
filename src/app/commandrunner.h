@@ -9,15 +9,16 @@ class CommandRunner : public QObject
     Q_OBJECT
 
 public:
-    CommandRunner();
+    explicit CommandRunner() : QObject() {}
 
-    void runCommand(QString command, QStringList arguments);
+    void runCommand(const QString &command, const QStringList &arguments);
 
 public slots:
     void readyReadStandardOutput();
     void readyReadStandardError();
     void finished(int);
     void stateChanged(QProcess::ProcessState);
+    void error(QProcess::ProcessError);
 
 private:
     QProcess* process;

@@ -162,14 +162,21 @@ void MainWindow::addItem(int index)
     ui->providerView->setItemWidget(item, widget);
 }
 
+void MainWindow::executeCommand(const QString& command, const QStringList& args)
+{
+    CommandRunner *runner = new CommandRunner();
+    runner->runCommand(command, args);
+}
+
 void MainWindow::installDropbox()
 {
-    CommandRunner runner;
-    QStringList arguments;
     //arguments << "urpmi" << "kfilebox";
     //runner.runCommand("gksudo ", arguments);
     //runner.runCommand("kfilebox", QStringList());
-    runner.runCommand("wget", QStringList() << "ya.ru");
+
+    executeCommand("/usr/local/bin/wget", QStringList() << "-nv" << "-O" << "/Users/ernest/downloaded.txt" << "yandex.ru");
+    executeCommand("/usr/local/bin/wget", QStringList() << "-nv" << "-O" << "/Users/ernest/downloaded_with_error.txt" << "stackoverflow.com/skldfjkdslf");
+    //http://stackoverflow.com/skldfjkdslf
 }
 
 void MainWindow::installSpiderOak()

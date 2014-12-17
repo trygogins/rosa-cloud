@@ -1,42 +1,39 @@
 #include "commandrunner.h"
 #include <QDebug>
 
-CommandRunner::CommandRunner() //: QObject(parent)
-{   
-}
-
-void CommandRunner::runCommand(QString command, QStringList arguments) {
+void CommandRunner::runCommand(const QString &command, const QStringList &arguments) {
     process = new QProcess();
-   // process->execute(command, arguments);
 
     connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput()));
     connect(process, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardError()));
     connect(process, SIGNAL(finished(int)), this, SLOT(finished(int)));
     connect(process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChanged(QProcess::ProcessState)));
+    connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
     process->start(command, arguments);
-//    while (!process->waitForFinished()) {
-        //qDebug() << ":(" << "\n";
-//    }
-
-  //  return process.exitCode() == 0;
 }
 
 void CommandRunner::readyReadStandardOutput()
 {
-    qDebug() << process->readAllStandardOutput();
+    qDebug() << "[" << process->program() << "]" << "standard output" << process->readAllStandardOutput();
 }
 
 void CommandRunner::readyReadStandardError()
 {
-    qDebug() << process->readAllStandardError();
+    qDebug() << "[" << process->program() << "]" << "standard error: " << process->readAllStandardError();
 }
 
 void CommandRunner::finished(int res)
 {
-    qDebug() << "Finished!!";
+    qDebug() << "[" << process->program() << "]" << "Finished: " << res;
 }
 
 void CommandRunner::stateChanged(QProcess::ProcessState newState)
 {
-    qDebug() << "New state!!";
+    qDebug() << "[" << process->program() << "]" << "New state" << newState;
+}
+
+void CommandRunner::error(QProcess::ProcessError error)
+{
+    qDebug() << "[" << process->program() << "]" << "Error: " << error;
+    qDebug() << "[" << process->program() << "]" << "Error string: " << process->errorString();
 }
