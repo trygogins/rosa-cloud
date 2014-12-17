@@ -40,7 +40,8 @@ private:
 
     void fillProviderModel();
     bool readConfig();
-    void addItem(int index);
+    void addItem(Provider* provider);
+    void checkInstalled();
 
     void executeCommand(const QString&, const QStringList&);
 
@@ -53,7 +54,7 @@ private:
     AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;
 
-    QList<Provider*> m_providers;
+    QMap<QString, Provider*> m_providers;
 };
 
 #endif // MAINWINDOW_H

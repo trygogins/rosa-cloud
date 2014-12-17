@@ -12,6 +12,7 @@ public:
     explicit CommandRunner(bool async = false) : QObject(), async(async) {}
 
     void runCommand(const QString &command, const QStringList &arguments);
+    void runCommandAsRoot(const QString& sudoPassword, const QString& command);
 
 public slots:
     void readyReadStandardOutput();
@@ -26,5 +27,6 @@ signals:
 private:
     QProcess* process;
     bool async;
+
 };
 #endif // COMMANDRUNNER_H

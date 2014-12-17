@@ -16,6 +16,12 @@ void CommandRunner::runCommand(const QString &command, const QStringList &argume
     }
 }
 
+void CommandRunner::runCommandAsRoot(const QString& sudoPassword, const QString& command) {
+    QString com = "echo '" + sudoPassword + "' | sudo -kS sh -c \"" + command + "\"";
+    qDebug() << com;
+    runCommand("sh", QStringList() << "-c" << com);
+}
+
 void CommandRunner::readyReadStandardOutput()
 {
     qDebug() << "[" << process->program() << "]" << "standard output" << process->readAllStandardOutput();
@@ -43,3 +49,4 @@ void CommandRunner::error(QProcess::ProcessError error)
     qDebug() << "[" << process->program() << "]" << "Error string: " << process->errorString();
     emit complete(- (error + 1) * 100); // used to identify errors (refactoring is welcome)
 }
+

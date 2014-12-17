@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>config.js</file>
+        <file>spinner.gif</file>
     </qresource>
 </RCC>

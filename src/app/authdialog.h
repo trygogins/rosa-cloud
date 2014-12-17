@@ -32,8 +32,9 @@ private slots:
 private:
     Ui::AuthDialog *ui;
     Provider *provider;
+    QString sudoPassword; // INSERT YOUR ROOT PASSWORD HERE
 
-    bool isProviderInstalled(QFile *configFile, QString name);
+    QString askRoot();
 };
 
 #endif // AUTHDIALOG_H

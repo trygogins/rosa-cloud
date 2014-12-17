@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "authdialog.h"
 #include "commandrunner.h"
+#include "spinbox.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (readConfig()) {
         fillProviderModel();
     }
+    checkInstalled();
 }
 
 MainWindow::~MainWindow()
@@ -49,8 +51,23 @@ void MainWindow::fillProviderModel()
         } else {
             prd = new Provider(name, title, url);
         }
-        m_providers.push_back(prd);
-        addItem(m_providers.size() - 1);
+        m_providers.insert(name, prd);
+        addItem(m_providers[name]);
+    }
+}
+
+void MainWindow::checkInstalled() {
+    QString username = qgetenv("USER");
+    QFile config("/home/" + username + "/.rosa-cloud");
+    if (config.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream stream(&config);
+        QString providerName;
+        do {
+            providerName = stream.readLine();
+            if (m_providers[providerName]) {
+                m_providers[providerName]->setActivated(true);
+            }
+        } while (!providerName.isNull());
     }
 }
 
@@ -81,6 +98,8 @@ void MainWindow::changeWidget(QWidget *widget)
     pal.setColor(QPalette::Base, color);
     QPushButton* connButton = widget->findChild<QPushButton*>("conn");
     connButton->setText(isDeactivated ? "Установить" : "Настройки");
+    QPushButton *openButton = widget->findChild<QPushButton*>("open");
+    openButton->setDisabled(isDeactivated ? true : false);
     widget->setPalette(pal);
 }
 
@@ -126,6 +145,8 @@ QPushButton* MainWindow::createSettingsButton(Provider *provider)
 QPushButton* MainWindow::createOpenButton(const QString &path)
 {
     QPushButton *openButton = new QPushButton(tr("Открыть папку"));
+    openButton->setObjectName("open");
+    openButton->setDisabled(true);
     QSignalMapper *signalMapper = new QSignalMapper(this);
     connect(openButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
     signalMapper->setMapping(openButton, path);
@@ -134,16 +155,14 @@ QPushButton* MainWindow::createOpenButton(const QString &path)
     return openButton;
 }
 
-void MainWindow::addItem(int index)
+void MainWindow::addItem(Provider* provider)
 {
-    Provider *provider = m_providers[index];
-
     QListWidgetItem *item = new QListWidgetItem();
     ui->providerView->addItem(item);
 
     QPushButton *settingsButton = createSettingsButton(provider);
 
-    QString path = "/";
+    QString path = "/home/" + qgetenv("USER") + "/" + provider->name() + "_folder";
     QPushButton *openButton = createOpenButton(path);
 
     QLabel *label = new QLabel(provider->title());
@@ -168,15 +187,6 @@ void MainWindow::executeCommand(const QString& command, const QStringList& args)
     runner->runCommand(command, args);
 }
 
-void MainWindow::installDropbox()
-{
-    CommandRunner* runner = new CommandRunner();
-    QStringList arguments;
-    arguments << "urpmi" << "kfilebox";
-    runner->runCommand("gksudo ", arguments);
-    runner->runCommand("kfilebox", QStringList());
-}
-
 void MainWindow::spiderDownloaded(int response)
 {
     if (response != 0) {
@@ -185,16 +195,49 @@ void MainWindow::spiderDownloaded(int response)
         CommandRunner *runner = new CommandRunner();
         QStringList args;
         args << "urpmi" << "--force" << "spideroak.rpm";
-        runner->runCommand("gksudo", args);
+        runner->runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
         runner->runCommand("SpiderOak", QStringList() << "&");
+        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
+        m_providers["spideroak"]->setActivated(true);
     }
+}
+
+void MainWindow::installDropbox()
+{
+    Provider* provider = m_providers["dropbox"];
+    CommandRunner runner;
+    if (!(provider->isActive())) {
+        QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
+        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream stream(&config);
+            stream << provider->name() << endl;
+            config.close();
+        }
+
+        runner.runCommand("urpmi", QStringList() << "kfilebox");
+        provider->setActivated(true);
+    }
+
+    runner.runCommand("kfilebox", QStringList());
 }
 
 void MainWindow::installSpiderOak()
 {
+    Provider* provider = m_providers["spideroak"];
     CommandRunner* runner = new CommandRunner(true);
-    QStringList arguments;
-    arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
-    connect(runner, SIGNAL(complete(int)), this, SLOT(spiderDownloaded(int)));
-    runner->runCommand("wget", arguments);
+    if (!(provider->isActive())) {
+        QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
+        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream stream(&config);
+            stream << provider->name() << endl;
+            config.close();
+        }
+
+        QStringList arguments;
+        arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
+        connect(runner, SIGNAL(complete(int)), this, SLOT(spiderDownloaded(int)));
+        runner->runCommand("wget", arguments);
+    } else {
+        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
+    }
 }

@@ -25,7 +25,6 @@ public:
     {
     }
 
-
     QString name() const
     {
         return m_name;
@@ -43,7 +42,7 @@ public:
 
     bool isActive() const
     {
-        return !m_token.isEmpty();
+        return m_isActive;
     }
 
     bool hasClient() const
@@ -56,10 +55,12 @@ public:
         return m_token;
     }
 
-    void setToken(const QString &token)
+    void setActivated(bool mark)
     {
-        m_token = token;
-        emit activated();
+        if (mark != m_isActive) {
+            m_isActive = mark;
+            emit activated();
+        }
     }
 
 signals:
@@ -71,6 +72,7 @@ private:
     QUrl m_url;
     QString m_token;
     bool m_hasClient;
+    bool m_isActive = false;
 };
 
 #endif // PROVIDERMODEL_H

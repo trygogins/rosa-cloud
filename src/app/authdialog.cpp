@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QDir>
 #include "commandrunner.h"
+#include "spinbox.h"
 
 #include <QDebug>
 
@@ -43,18 +44,25 @@ void AuthDialog::openAuthDialog(QObject *o_provider)
 
 void AuthDialog::on_pushButton_clicked()
 {
+    if (sudoPassword.isNull()) {
+        sudoPassword = askRoot();
+    }
+    //TODO: handle invalid password
     QString name = provider->name();
     //url for egnyte
     QString egn;
     if (name == "egnyte") {
         bool ok;
-        egn = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+        egn = QInputDialog::getText(this, tr("Введите путь до хранилища"),
                                                  tr("URL:"), QLineEdit::Normal,
                                                  QDir::home().dirName(), &ok);
-        if (ok && !egn.isEmpty()) {
-                 //action
+        if (!ok || egn.isEmpty()) {
+                 //action if error
         }
     }
+    Spinbox *sp = new Spinbox();
+    sp->show();
+
     QUrl url = provider->url();
     QString login = ui->loginEdit->text();
     QString password = ui->passwordEdit->text();
@@ -63,48 +71,52 @@ void AuthDialog::on_pushButton_clicked()
 
     CommandRunner runner;
     QFile config("/home/" + username + "/.rosa-cloud");
-    if (!isProviderInstalled(&config, name)) {
-        if (config.open(QFile::WriteOnly | QFile::Text)) {
+    if (!(provider->isActive())) {
+        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
             QTextStream stream(&config);
             stream << name << endl;
             config.close();
         }
 
-        QString fstabCredentials = url.toString() + " " + mountPoint + " davfs user,rw,noauto 0 0";
         QString davfsCredentials = url.toString() + " " + login + " " + password;
 
-        runner.runCommand("sh", QStringList() << "-c" << "echo '" + fstabCredentials + "' | gksudo tee -a /etc/fstab");
-        runner.runCommand("sh", QStringList() << "-c" << "echo '" + davfsCredentials + "' | tee -a $HOME/.davfs2/secrets");
-        provider->setToken(QString("token!!"));
-
+        runner.runCommandAsRoot(sudoPassword,
+                                "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
         runner.runCommand("mkdir", QStringList() << mountPoint);
     }
     // mount
-    runner.runCommand("mount", QStringList() << url.toString());
-
+    runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
     //message for ui to change
-    provider->setToken(QString("token!!"));
+    provider->setActivated(true);
 
+    sp->close();
     this->close();
 }
 
 void AuthDialog::on_pushButton_2_clicked()
 {
+    if (sudoPassword.isNull()) {
+        sudoPassword = askRoot();
+    }
+    //TODO: handle invalid password
+    provider->setActivated(false);
     //unmount
+    QString name = provider->name();
+    QString username = qgetenv("USER");
+    QString mountPoint = "/home/" + username + "/" + name + "_folder";
+    CommandRunner runner;
+    runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
+
+    this->close();
 }
 
-bool AuthDialog::isProviderInstalled(QFile *configFile, QString name)
-{
-    if (configFile->open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream stream(configFile);
-        QString providerName;
-        do {
-            providerName = stream.readLine();
-            if (providerName.compare(name) == 0) {
-                return true;
-            }
-        } while (!providerName.isNull());
+QString AuthDialog::askRoot() {
+    bool ok;
+    QString res = QInputDialog::getText(this, tr("Введите Root пароль"),
+                                             tr("Пароль:"), QLineEdit::Password,
+                                             QDir::home().dirName(), &ok);
+    if (!ok || res.isEmpty()) {
+             //action if error
     }
-
-    return false;
+    return res;
 }
