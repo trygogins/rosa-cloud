@@ -35,6 +35,8 @@ private slots:
     void installSpiderOak();
 
     void spiderDownloaded(int response);
+    void spiderInstalled(int response);
+
 
 private:
     static const int ACTIVATED_COLOR = 0x95FF6B;

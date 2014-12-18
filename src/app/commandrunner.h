@@ -13,6 +13,7 @@ public:
 
     void runCommand(const QString &command, const QStringList &arguments);
     void runCommandAsRoot(const QString& sudoPassword, const QString& command);
+    void runCommandDetached(const QString& command);
 
 public slots:
     void readyReadStandardOutput();

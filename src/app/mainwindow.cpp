@@ -196,23 +196,6 @@ void MainWindow::executeCommand(const QString& command, const QStringList& args)
     runner->runCommand(command, args);
 }
 
-void MainWindow::spiderDownloaded(int response)
-{
-    if (response != 0) {
-        // TODO: show error window
-    } else {
-        CommandRunner *runner = new CommandRunner();
-        QStringList args;
-        args << "urpmi" << "--force" << "spideroak.rpm";
-        runner->runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
-        //runner->runCommand("SpiderOak", QStringList() << "&");
-        (new CommandRunner(true))->runCommand("nohup", QStringList() << "SpiderOak" << "&");
-        m_providers["spideroak"]->setActivated(true);
-        markClientMounted("spideroak");
-        sb->close();
-    }
-}
-
 void MainWindow::installDropbox()
 {
     Provider* provider = m_providers["dropbox"];
@@ -223,7 +206,7 @@ void MainWindow::installDropbox()
         markClientMounted(provider->name());
     }
 
-    (new CommandRunner(true))->runCommand("nohup", QStringList() << "kfilebox");
+    runner.runCommandDetached("kfilebox");
 }
 
 void MainWindow::installSpiderOak()
@@ -237,7 +220,31 @@ void MainWindow::installSpiderOak()
         connect(runner, SIGNAL(complete(int)), this, SLOT(spiderDownloaded(int)));
         runner->runCommand("wget", arguments);
     } else {
-        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak");
+        runner->runCommandDetached("SpiderOak");
+    }
+}
+
+void MainWindow::spiderDownloaded(int response)
+{
+    if (response != 0) {
+        // TODO: show error window
+    } else {
+        CommandRunner *runner = new CommandRunner(true);
+        connect(runner, SIGNAL(complete(int)), this, SLOT(spiderInstalled(int)));
+        runner->runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
+    }
+}
+
+void MainWindow::spiderInstalled(int response)
+{
+    if (response != 0) {
+        // TODO: show error window
+    } else {
+        m_providers["spideroak"]->setActivated(true);
+        markClientMounted("spideroak");
+        sb->close();
+        CommandRunner *runner = new CommandRunner();
+        runner->runCommandDetached("SpiderOak");
     }
 }
 
@@ -247,7 +254,7 @@ QString MainWindow::askRoot() {
                                         tr("Пароль:"), QLineEdit::Password,
                                          "", &ok);
     if (!ok || res.isEmpty()) {
-             //action if error
+             // TODO: action if error
     }
     return res;
 }

@@ -22,6 +22,11 @@ void CommandRunner::runCommandAsRoot(const QString& sudoPassword, const QString&
     runCommand("sh", QStringList() << "-c" << com);
 }
 
+void CommandRunner::runCommandDetached(const QString &command) {
+    process = new QProcess();
+    process->startDetached(command);
+}
+
 void CommandRunner::readyReadStandardOutput()
 {
     qDebug() << "[" << process->program() << "]" << "standard output" << process->readAllStandardOutput();
