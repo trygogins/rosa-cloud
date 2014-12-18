@@ -6,6 +6,7 @@
 #include <QDir>
 #include "commandrunner.h"
 #include "spinbox.h"
+#include "utils.h"
 
 #include <QDebug>
 
@@ -67,25 +68,19 @@ void AuthDialog::on_pushButton_clicked()
     QString mountPoint = "/home/" + username + "/" + name + "_folder";
 
     CommandRunner runner;
-    QFile config("/home/" + username + "/.rosa-cloud");
     if (!(provider->isActive())) {
-        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream stream(&config);
-            stream << name << endl;
-            config.close();
-        }
 
         QString davfsCredentials = url.toString() + " " + login + " " + password;
 
         runner.runCommandAsRoot(sudoPassword,
                                 "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
         runner.runCommand("mkdir", QStringList() << mountPoint);
+        markClientMounted(name);
     }
     // mount
     runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
     //message for ui to change
     provider->setActivated(true);
-
     sp->close();
     this->close();
 }
@@ -99,6 +94,6 @@ void AuthDialog::on_pushButton_2_clicked()
     QString mountPoint = "/home/" + username + "/" + name + "_folder";
     CommandRunner runner;
     runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
-
+    markClientUnmounted(name);
     this->close();
 }

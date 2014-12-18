@@ -3,6 +3,7 @@
 #include "authdialog.h"
 #include "commandrunner.h"
 #include "spinbox.h"
+#include "utils.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -37,6 +38,7 @@ void MainWindow::postInit() {
         sudoPassword = askRoot();
     }
     authDialog = new AuthDialog(sudoPassword, this);
+    sb = new Spinbox();
     if (readConfig()) {
         fillProviderModel();
     }
@@ -203,9 +205,11 @@ void MainWindow::spiderDownloaded(int response)
         QStringList args;
         args << "urpmi" << "--force" << "spideroak.rpm";
         runner->runCommand("urpmi", QStringList() << "--force" << "spideroak.rpm");
-        runner->runCommand("SpiderOak", QStringList() << "&");
-        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
+        //runner->runCommand("SpiderOak", QStringList() << "&");
+        (new CommandRunner(true))->runCommand("nohup", QStringList() << "SpiderOak" << "&");
         m_providers["spideroak"]->setActivated(true);
+        markClientMounted("spideroak");
+        sb->close();
     }
 }
 
@@ -214,18 +218,12 @@ void MainWindow::installDropbox()
     Provider* provider = m_providers["dropbox"];
     CommandRunner runner;
     if (!(provider->isActive())) {
-        QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
-        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream stream(&config);
-            stream << provider->name() << endl;
-            config.close();
-        }
-
         runner.runCommand("urpmi", QStringList() << "kfilebox");
         provider->setActivated(true);
+        markClientMounted(provider->name());
     }
 
-    runner.runCommand("kfilebox", QStringList());
+    (new CommandRunner(true))->runCommand("nohup", QStringList() << "kfilebox");
 }
 
 void MainWindow::installSpiderOak()
@@ -233,19 +231,13 @@ void MainWindow::installSpiderOak()
     Provider* provider = m_providers["spideroak"];
     CommandRunner* runner = new CommandRunner(true);
     if (!(provider->isActive())) {
-        QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
-        if (config.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-            QTextStream stream(&config);
-            stream << provider->name() << endl;
-            config.close();
-        }
-
+        sb->show();
         QStringList arguments;
         arguments << "https://spideroak.com/directdownload?platform=fedora&arch=x86_64" << "-O" << "spideroak.rpm";
         connect(runner, SIGNAL(complete(int)), this, SLOT(spiderDownloaded(int)));
         runner->runCommand("wget", arguments);
     } else {
-        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak" << "&");
+        (new CommandRunner())->runCommand("nohup", QStringList() << "SpiderOak");
     }
 }
 

@@ -25,7 +25,8 @@ HEADERS += \
     authdialog.h \
     ../providerdelegate.h \
     provider.h \
-    spinbox.h
+    spinbox.h \
+    utils.h
 
 FORMS += \
     mainwindow.ui \

@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include "provider.h"
+#include "spinbox.h"
 #include "authdialog.h"
 
 namespace Ui {
@@ -52,6 +53,7 @@ private:
     QPushButton* createOpenButton(const QString &);
 
     AuthDialog *authDialog;
+    Spinbox *sb;
     Ui::MainWindow *ui;
     AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;
