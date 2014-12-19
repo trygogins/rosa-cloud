@@ -71,12 +71,16 @@ void MainWindow::checkInstalled() {
     if (config.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream stream(&config);
         QString providerName;
-        do {
+        while (!(providerName = stream.readLine()).isNull()) {
             providerName = stream.readLine();
-            if (m_providers[providerName]) {
-                m_providers[providerName]->setActivated(true);
+            QStringList info = providerName.split(" ");
+            if (m_providers[info.at(0)]) {
+                m_providers[info.at(0)]->setInstalled(true);
+                if (info.at(1) == "1") {
+                    m_providers[info.at(0)]->setMount(true);
+                }
             }
-        } while (!providerName.isNull());
+        }
     }
 }
 
@@ -123,7 +127,7 @@ QFrame* MainWindow::createWidget(Provider *provider, QHBoxLayout *hLayout)
     widget->setFrameShape(QFrame::Box);
     widget->setLineWidth(1);
     QSignalMapper *signalMapper = new QSignalMapper(this);
-    connect(provider, SIGNAL(activated()), signalMapper, SLOT(map()));
+    connect(provider, SIGNAL(mount()), signalMapper, SLOT(map()));
     signalMapper->setMapping(provider, widget);
     connect(signalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(changeWidget(QWidget*)));
 
@@ -202,7 +206,7 @@ void MainWindow::installDropbox()
     CommandRunner runner;
     if (!(provider->isActive())) {
         runner.runCommand("urpmi", QStringList() << "kfilebox");
-        provider->setActivated(true);
+        provider->setInstalled(true);
         markClientMounted(provider->name());
     }
 
@@ -240,7 +244,7 @@ void MainWindow::spiderInstalled(int response)
     if (response != 0) {
         QMessageBox::critical(this, tr("Ошибка"), "Ошибка при установке SpiderOak!", QMessageBox::Ok);
     } else {
-        m_providers["spideroak"]->setActivated(true);
+        m_providers["spideroak"]->setInstalled(true);
         markClientMounted("spideroak");
         sb->close();
         CommandRunner *runner = new CommandRunner();

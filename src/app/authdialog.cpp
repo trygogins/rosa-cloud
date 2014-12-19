@@ -34,13 +34,31 @@ void AuthDialog::openAuthDialog(QObject *o_provider)
     ui->loginEdit->setText("");
     ui->passwordEdit->setText("");
 
+    if (provider->isActive() && !provider->isMount()) {
+        CommandRunner runner;
+        QString username = qgetenv("USER");
+        QString mountPoint = "/home/" + username + "/" + provider->name() + "_folder";
+        runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + provider->url().toString() + " " + mountPoint);
+        markMountInFile(provider->name(), "1");
+        provider->setMount(true);
+        return;
+    }
+
     if (!isVisible())
         show();
 
-    if (provider->isActive()) {
+    if (provider->isMount()) {
         ui->pushButton_2->setDisabled(false);
+        ui->pushButton->setDisabled(true);
+
+        ui->loginEdit->setDisabled(true);
+        ui->passwordEdit->setDisabled(true);
     } else {
         ui->pushButton_2->setDisabled(true);
+        ui->pushButton->setDisabled(false);
+
+        ui->loginEdit->setDisabled(false);
+        ui->passwordEdit->setDisabled(false);
     }
 }
 
@@ -68,32 +86,26 @@ void AuthDialog::on_pushButton_clicked()
     QString mountPoint = "/home/" + username + "/" + name + "_folder";
 
     CommandRunner runner;
-    if (!(provider->isActive())) {
+    QString davfsCredentials = url.toString() + " " + login + " " + password;
 
-        QString davfsCredentials = url.toString() + " " + login + " " + password;
+    runner.runCommandAsRoot(sudoPassword,
+                            "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
+    runner.runCommand("mkdir", QStringList() << mountPoint);
+    markClientMounted(name);
 
-        runner.runCommandAsRoot(sudoPassword,
-                                "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
-        runner.runCommand("mkdir", QStringList() << mountPoint);
-        markClientMounted(name);
-    }
     // mount
     runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
     //message for ui to change
-    provider->setActivated(true);
+    provider->setInstalled(true);
+    provider->setMount(true);
+
     sp->close();
     this->close();
 }
 
 void AuthDialog::on_pushButton_2_clicked()
 {
-    provider->setActivated(false);
-    //unmount
-    QString name = provider->name();
-    QString username = qgetenv("USER");
-    QString mountPoint = "/home/" + username + "/" + name + "_folder";
-    CommandRunner runner;
-    runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
-    markClientUnmounted(name);
+    markClientUnmounted(sudoPassword, provider->name());
+    provider->setMount(false);
     this->close();
 }

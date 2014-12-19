@@ -45,6 +45,11 @@ public:
         return m_isActive;
     }
 
+    bool isMount() const
+    {
+        return m_isMount;
+    }
+
     bool hasClient() const
     {
         return m_hasClient;
@@ -55,16 +60,23 @@ public:
         return m_token;
     }
 
-    void setActivated(bool mark)
+    void setInstalled(bool mark)
     {
         if (mark != m_isActive) {
             m_isActive = mark;
-            emit activated();
+        }
+    }
+
+    void setMount(bool mark)
+    {
+        if (mark != m_isMount) {
+            m_isMount = mark;
+            emit mount();
         }
     }
 
 signals:
-    void activated();
+    void mount();
 
 private:
     QString m_name;
@@ -73,6 +85,7 @@ private:
     QString m_token;
     bool m_hasClient;
     bool m_isActive = false;
+    bool m_isMount = false;
 };
 
 #endif // PROVIDERMODEL_H
