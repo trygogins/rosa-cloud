@@ -72,7 +72,6 @@ void MainWindow::checkInstalled() {
         QTextStream stream(&config);
         QString providerName;
         while (!(providerName = stream.readLine()).isNull()) {
-            providerName = stream.readLine();
             QStringList info = providerName.split(" ");
             if (m_providers[info.at(0)]) {
                 m_providers[info.at(0)]->setInstalled(true);
@@ -207,6 +206,7 @@ void MainWindow::installDropbox()
     if (!(provider->isActive())) {
         runner.runCommand("urpmi", QStringList() << "kfilebox");
         provider->setInstalled(true);
+        provider->setMount(true);
         markClientMounted(provider->name());
     }
 
@@ -245,6 +245,7 @@ void MainWindow::spiderInstalled(int response)
         QMessageBox::critical(this, tr("Ошибка"), "Ошибка при установке SpiderOak!", QMessageBox::Ok);
     } else {
         m_providers["spideroak"]->setInstalled(true);
+        m_providers["spideroak"]->setMount(true);
         markClientMounted("spideroak");
         sb->close();
         CommandRunner *runner = new CommandRunner();
@@ -259,7 +260,7 @@ QString MainWindow::askRoot() {
         QString res = QInputDialog::getText(this, tr("Введите Root пароль"),
                                             tr("Пароль:"), QLineEdit::Password,
                                              "", &ok);
-        if (ok && !res.isEmpty()) {
+        if (ok && correct(res)) {
             return res;
         }
         if (++count == 3) {

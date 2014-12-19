@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QProcess>
 
 static void markClientMounted(QString name) {
     QFile config("/home/" + qgetenv("USER") + "/.rosa-cloud");
@@ -28,6 +29,15 @@ static void markClientUnmounted(QString sudoPassword, QString name) {
     CommandRunner runner;
     runner.runCommandAsRoot(sudoPassword, "umount " + mountPoint);
     markMountInFile(name, "0");
+}
+
+static bool correct(QString rootPassword) {
+    QProcess proc;
+    // check if the password correct by checking process exitCode
+    proc.start("sh", QStringList() << "-c" << "echo '" + rootPassword + "' | sudo -kS ls");
+    proc.waitForFinished();
+
+    return proc.exitCode() == 0;
 }
 
 #endif // UTILS_H
