@@ -91,11 +91,22 @@ void AuthDialog::on_pushButton_clicked()
     runner.runCommandAsRoot(sudoPassword,
                             "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
     runner.runCommand("mkdir", QStringList() << mountPoint);
-    markClientMounted(name);
 
     // mount
-    runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
+    int res = runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
+    if (res != 0) {
+        sp->close();
+        QMessageBox::critical(this, tr("Ошибка"), "Ошибка при загрузке SpiderOak!", QMessageBox::Ok);
+        markClientUnmounted(sudoPassword, name);
+        CommandRunner runner;
+        runner.runCommandAsRoot(sudoPassword, QString("sed -i") +
+                           " '/" + davfsCredentials.replace(QString("/"), QString("\\/")) + "/d' " +
+                           " /etc/davfs2/secrets");
+        runner.runCommand("rmdir", QStringList() << mountPoint);
+        return;
+    }
     //message for ui to change
+    markClientMounted(name);
     provider->setInstalled(true);
     provider->setMount(true);
 

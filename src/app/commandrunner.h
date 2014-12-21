@@ -11,8 +11,8 @@ class CommandRunner : public QObject
 public:
     explicit CommandRunner(bool async = false) : QObject(), async(async) {}
 
-    void runCommand(const QString &command, const QStringList &arguments);
-    void runCommandAsRoot(const QString& sudoPassword, const QString& command);
+    int runCommand(const QString &command, const QStringList &arguments);
+    int runCommandAsRoot(const QString& sudoPassword, const QString& command);
     void runCommandDetached(const QString& command);
 
     QString* getLastOutput() { return lastOutput; }

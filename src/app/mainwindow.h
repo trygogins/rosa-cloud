@@ -57,7 +57,6 @@ private:
     AuthDialog *authDialog;
     Spinbox *sb;
     Ui::MainWindow *ui;
-    AddProviderDialog *m_addProviderDialog;
     QJsonObject m_config;
 
 

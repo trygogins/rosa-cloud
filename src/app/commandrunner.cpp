@@ -1,7 +1,7 @@
 #include "commandrunner.h"
 #include <QDebug>
 
-void CommandRunner::runCommand(const QString &command, const QStringList &arguments) {
+int CommandRunner::runCommand(const QString &command, const QStringList &arguments) {
     process = new QProcess();    
     if (async) {
         connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput()));
@@ -10,16 +10,18 @@ void CommandRunner::runCommand(const QString &command, const QStringList &argume
         connect(process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChanged(QProcess::ProcessState)));
         connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
         process->start(command, arguments);
+        return 0;
     } else {
-        process->execute(command, arguments);
+        int res = process->execute(command, arguments);
         lastOutput = new QString(process->readAllStandardOutput());
+        return res;
     }
 }
 
-void CommandRunner::runCommandAsRoot(const QString& sudoPassword, const QString& command) {
+int CommandRunner::runCommandAsRoot(const QString& sudoPassword, const QString& command) {
     QString com = "echo '" + sudoPassword + "' | sudo -kS sh -c \"" + command + "\"";
     qDebug() << com;
-    runCommand("sh", QStringList() << "-c" << com);
+    return runCommand("sh", QStringList() << "-c" << com);
 }
 
 void CommandRunner::runCommandDetached(const QString &command) {

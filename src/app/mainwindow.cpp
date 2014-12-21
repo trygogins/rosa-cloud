@@ -246,6 +246,7 @@ void MainWindow::spiderDownloaded(int response)
 {
     if (response != 0) {
         QMessageBox::critical(this, tr("Ошибка"), "Ошибка при загрузке SpiderOak!", QMessageBox::Ok);
+        sb->close();
     } else {
         CommandRunner *runner = new CommandRunner(true);
         connect(runner, SIGNAL(complete(int)), this, SLOT(spiderInstalled(int)));
@@ -257,6 +258,7 @@ void MainWindow::spiderInstalled(int response)
 {
     if (response != 0) {
         QMessageBox::critical(this, tr("Ошибка"), "Ошибка при установке SpiderOak!", QMessageBox::Ok);
+        sb->close();
     } else {
         m_providers["spideroak"]->setInstalled(true);
         m_providers["spideroak"]->setMount(true);
@@ -274,7 +276,11 @@ QString MainWindow::askRoot() {
         QString res = QInputDialog::getText(this, tr("Введите Root пароль"),
                                             tr("Пароль:"), QLineEdit::Password,
                                              "", &ok);
-        if (ok && correct(res)) {
+        if (!ok) {
+            this->close();
+            return res;
+        }
+        if (correct(res)) {
             return res;
         }
         if (++count == 3) {

@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
     a.setApplicationName("rosa-cloud");
     a.setApplicationDisplayName("Rosa Cloud");
     MainWindow w;
+    w.setAttribute(Qt::WA_QuitOnClose);
     w.show();
     w.postInit();
 
