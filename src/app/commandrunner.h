@@ -15,6 +15,8 @@ public:
     void runCommandAsRoot(const QString& sudoPassword, const QString& command);
     void runCommandDetached(const QString& command);
 
+    QString* getLastOutput() { return lastOutput; }
+
 public slots:
     void readyReadStandardOutput();
     void readyReadStandardError();
@@ -28,6 +30,7 @@ signals:
 private:
     QProcess* process;
     bool async;
+    QString* lastOutput;
 
 };
 #endif // COMMANDRUNNER_H

@@ -2,17 +2,17 @@
 #include <QDebug>
 
 void CommandRunner::runCommand(const QString &command, const QStringList &arguments) {
-    process = new QProcess();
-
-    connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput()));
-    connect(process, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardError()));
-    connect(process, SIGNAL(finished(int)), this, SLOT(finished(int)));
-    connect(process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChanged(QProcess::ProcessState)));
-    connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
+    process = new QProcess();    
     if (async) {
+        connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutput()));
+        connect(process, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardError()));
+        connect(process, SIGNAL(finished(int)), this, SLOT(finished(int)));
+        connect(process, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChanged(QProcess::ProcessState)));
+        connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
         process->start(command, arguments);
     } else {
         process->execute(command, arguments);
+        lastOutput = new QString(process->readAllStandardOutput());
     }
 }
 
@@ -29,7 +29,9 @@ void CommandRunner::runCommandDetached(const QString &command) {
 
 void CommandRunner::readyReadStandardOutput()
 {
-    qDebug() << "[" << process->program() << "]" << "standard output" << process->readAllStandardOutput();
+    QByteArray out = process->readAllStandardOutput();
+    qDebug() << "[" << process->program() << "]" << "standard output" << out;
+    lastOutput = new QString(out);
 }
 
 void CommandRunner::readyReadStandardError()
