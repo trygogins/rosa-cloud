@@ -13,7 +13,9 @@ public:
         m_name(name),
         m_title(title),
         m_url(url),
-        m_hasClient(false)
+        m_hasClient(false),
+        m_isActive(false),
+        m_isMount(false)
     {
     }
 
@@ -21,7 +23,9 @@ public:
         m_name(name),
         m_title(title),
         m_url(url),
-        m_hasClient(hasClient)
+        m_hasClient(hasClient),
+        m_isActive(false),
+        m_isMount(false)
     {
     }
 
@@ -84,8 +88,8 @@ private:
     QUrl m_url;
     QString m_token;
     bool m_hasClient;
-    bool m_isActive = false;
-    bool m_isMount = false;
+    bool m_isActive;
+    bool m_isMount;
 };
 
 #endif // PROVIDERMODEL_H
