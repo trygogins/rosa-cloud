@@ -9,7 +9,8 @@
             "name" : "dropbox",
             "title" : "Dropbox",
             "url" : "",
-            "hasClient" : true
+            "hasClient" : true,
+            "folder" : "Dropbox"
         },
         {
             "name" : "egnyte",
@@ -25,7 +26,8 @@
             "name" : "spideroak",
             "title" : "SpiderOak",
             "url" : "",
-            "hasClient" : true
+            "hasClient" : true,
+            "folder" : "SpiderOak Hive"
         }
 
     ]

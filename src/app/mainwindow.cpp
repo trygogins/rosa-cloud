@@ -112,6 +112,11 @@ void MainWindow::changeWidget(QWidget *widget)
     connButton->setText(isDeactivated ? "Установить" : "Настройки");
     QPushButton *openButton = widget->findChild<QPushButton*>("open");
     openButton->setDisabled(isDeactivated ? true : false);
+    QLabel *name = widget->findChild<QLabel*>("name");
+    Provider *provider = m_providers[name->text()];
+    if (!isDeactivated && provider->hasClient()) {
+        connButton->setDisabled(true);
+    }
     widget->setPalette(pal);
 }
 
@@ -174,17 +179,26 @@ void MainWindow::addItem(Provider* provider)
 
     QPushButton *settingsButton = createSettingsButton(provider);
 
-    QString path = "/home/" + qgetenv("USER") + "/" + provider->name() + "_folder";
+    QString path;
+    if (provider->hasClient()) {
+        path = "/home/" + qgetenv("USER") + "/" + provider->folder();
+    } else {
+        path = "/home/" + qgetenv("USER") + "/" + provider->name() + "_folder";
+    }
     QPushButton *openButton = createOpenButton(path);
 
     QLabel *label = new QLabel(provider->title());
     label->setStyleSheet("font: 18pt;");
+    QLabel *label2 = new QLabel(provider->name());
+    label2->setVisible(false);
+    label2->setObjectName("name");
 
     QVBoxLayout *vLayout= new QVBoxLayout();
     vLayout->addWidget(settingsButton);
     vLayout->addWidget(openButton);
     QHBoxLayout *hLayout= new QHBoxLayout();
     hLayout->addWidget(label);
+    hLayout->addWidget(label2);
     hLayout->addLayout(vLayout);
 
     QFrame *widget = createWidget(provider, hLayout);

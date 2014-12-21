@@ -39,6 +39,11 @@ public:
         return m_title;
     }
 
+    QString folder() const
+    {
+        return m_folder;
+    }
+
     QUrl url() const
     {
         return m_url;
@@ -79,6 +84,10 @@ public:
         }
     }
 
+    void setFolder(QString folder) {
+        m_folder = folder;
+    }
+
 signals:
     void mount();
 
@@ -87,6 +96,7 @@ private:
     QString m_title;
     QUrl m_url;
     QString m_token;
+    QString m_folder;
     bool m_hasClient;
     bool m_isActive;
     bool m_isMount;
