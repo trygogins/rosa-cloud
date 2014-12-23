@@ -96,7 +96,7 @@ void AuthDialog::on_pushButton_clicked()
     int res = runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
     if (res != 0) {
         sp->close();
-        QMessageBox::critical(this, tr("Ошибка"), "Ошибка при загрузке SpiderOak!", QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Ошибка"), "Ошибка при авторизации в " + name + "!", QMessageBox::Ok);
         markClientUnmounted(sudoPassword, name);
         CommandRunner runner;
         runner.runCommandAsRoot(sudoPassword, QString("sed -i") +
