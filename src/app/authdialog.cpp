@@ -69,31 +69,37 @@ void AuthDialog::on_pushButton_clicked()
     QString egn;
     if (name == "egnyte") {
         bool ok;
-        egn = QInputDialog::getText(this, tr("Введите путь до хранилища"),
-                                                 tr("URL:"), QLineEdit::Normal,
+        egn = QInputDialog::getText(this, tr("Введите имя хранилища"),
+                                                 tr("Имя:"), QLineEdit::Normal,
                                                  QDir::home().dirName(), &ok);
         if (!ok || egn.isEmpty()) {
-                 //action if error
+            QMessageBox::critical(this, tr("Ошибка"), "Ошибка при установке Egnyte!", QMessageBox::Ok);
+            return;
         }
     }
     Spinbox *sp = new Spinbox();
     sp->show();
 
-    QUrl url = provider->url();
+    QString url = provider->url().toString();
     QString login = ui->loginEdit->text();
     QString password = ui->passwordEdit->text();
     QString username = qgetenv("USER");
     QString mountPoint = "/home/" + username + "/" + name + "_folder";
 
+    if (name == "egnyte") {
+        url = url.replace("username", egn);
+    }
+
     CommandRunner runner;
-    QString davfsCredentials = url.toString() + " " + login + " " + password;
+    QString davfsCredentials = url + " " + login + " " + password;
+
 
     runner.runCommandAsRoot(sudoPassword,
                             "echo '" + davfsCredentials + "' >> /etc/davfs2/secrets");
     runner.runCommand("mkdir", QStringList() << mountPoint);
 
     // mount
-    int res = runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url.toString() + " " + mountPoint);
+    int res = runner.runCommandAsRoot(sudoPassword, "mount -t davfs2 -o rw " + url + " " + mountPoint);
     if (res != 0) {
         sp->close();
         QMessageBox::critical(this, tr("Ошибка"), "Ошибка при авторизации в " + name + "!", QMessageBox::Ok);

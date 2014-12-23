@@ -15,7 +15,7 @@
         {
             "name" : "egnyte",
             "title" : "Egnyte",
-            "url" : "https://webdav-cottonwoodcap.egnyte.com/cottonwoodcap-egnyte"
+            "url" : "https://webdav-username.egnyte.com/username-egnyte"
         },
         {
             "name" : "yandex_disk",
