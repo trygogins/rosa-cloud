@@ -30,7 +30,7 @@ void AuthDialog::openAuthDialog(QObject *o_provider)
 {
     Provider *provider = dynamic_cast<Provider*>(o_provider);
     this->provider = provider;
-    setWindowTitle(tr("Login to %1").arg(provider->name()));
+    setWindowTitle(tr("Авторизация в %1").arg(provider->name()));
     ui->loginEdit->setText("");
     ui->passwordEdit->setText("");
 
