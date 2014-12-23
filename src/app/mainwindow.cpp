@@ -279,15 +279,14 @@ QString MainWindow::askRoot() {
                                             tr("Пароль:"), QLineEdit::Password,
                                              "", &ok);
         if (!ok) {
-            this->close();
-            return res;
+            exit(EXIT_FAILURE);
         }
         if (correct(res)) {
             return res;
         }
         if (++count == 3) {
             QMessageBox::critical(this, tr("Ошибка"), "Вы ввели неверный пароль трижды!", QMessageBox::Ok);
-            QApplication::quit();
+            exit(EXIT_FAILURE);
         }
     }
 }
