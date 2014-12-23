@@ -57,6 +57,7 @@ void MainWindow::fillProviderModel()
         QJsonValue hasClient = provider.value("hasClient");
         if (!hasClient.isNull()) {
             prd = new Provider(name, title, url, hasClient.toBool());
+            prd->setFolder(provider.value("folder").toString());
         } else {
             prd = new Provider(name, title, url);
         }
@@ -115,7 +116,8 @@ void MainWindow::changeWidget(QWidget *widget)
     QLabel *name = widget->findChild<QLabel*>("name");
     Provider *provider = m_providers[name->text()];
     if (!isDeactivated && provider->hasClient()) {
-        connButton->setDisabled(true);
+        connButton->setText("Открыть");
+        openButton->setDisabled(true);
     }
     widget->setPalette(pal);
 }
